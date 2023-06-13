@@ -95,7 +95,8 @@ def _resolve(principal, resource):
 
 
 def allowed(principal, resource, action):
-    return action in _resolve(principal, resource)
+    actions = _resolve(principal, resource)
+    return action in actions or FULL_ACCESS_ACTION in actions
 
 
 class Authenticator():
@@ -109,5 +110,5 @@ class Authenticator():
 
         if self._throw and not is_allowed:
             raise TagthNoAccess()
-        
+
         return is_allowed

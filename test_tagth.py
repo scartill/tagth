@@ -56,6 +56,15 @@ def test_allowed():
     a = allowed('me', 'me', 'all')
     assert a
 
+    a = allowed('me', 'me', 'ro')
+    assert a
+
+    a = allowed('me', ':ro', 'ro')
+    assert a
+
+    a = allowed('me', 'any:ro', 'ro')
+    assert a
+
     a = allowed('me', 'they:ro, meme:rw', 'rw')
     assert a
 
