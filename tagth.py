@@ -99,9 +99,15 @@ def allowed(principal, resource, action):
 
 
 class Authenticator():
-    def __init__(self, principal, resource):
+    def __init__(self, principal, resource, throw=False):
         self._principal = principal
         self._resource = resource
+        self._throw = throw
 
     def allowed(self, action):
-        return allowed(self._principal, self._resource, action)
+        is_allowed = allowed(self._principal, self._resource, action)
+
+        if self._throw and not is_allowed:
+            raise TagthNoAccess()
+        
+        return is_allowed

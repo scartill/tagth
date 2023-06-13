@@ -1,5 +1,7 @@
+import pytest
+
 from tagth import _normalize_principal, _normalize_resource, _resolve, allowed
-from tagth import Authenticator
+from tagth import Authenticator, TagthNoAccess
 
 
 def test_normalize_principal():
@@ -68,3 +70,12 @@ def test_authenticator():
 
     a = auth.allowed('all')
     assert not a
+
+
+def test_authenticator_throw():
+    auth = Authenticator('me', 'me:ro', throw=True)
+    a = auth.allowed('ro')
+    assert a
+
+    with pytest.raises(TagthNoAccess):
+        a = auth.allowed('all')
