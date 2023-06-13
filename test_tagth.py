@@ -1,4 +1,5 @@
-from tagth import _normalize_principal, _normalize_resource
+from tagth import _normalize_principal, _normalize_resource, _resolve, allowed
+from tagth import Authenticator
 
 
 def test_normalize_principal():
@@ -11,13 +12,59 @@ def test_normalize_principal():
     p = _normalize_principal(['this', 'that', lambda: 'those'])
     assert list(p) == ['this', 'that', 'those']
 
+    p = _normalize_principal('this,that, those')
+    assert list(p) == ['this', 'that', 'those']
+
 
 def test_normalize_resource():
     s = _normalize_resource('me')
-    print(list(s))
+    assert list(s) == [('me', 'all')]
 
     s = _normalize_resource(lambda: ['this', 'that:ro'])
-    print(list(s))
+    assert list(s) == [('this', 'all'), ('that', 'ro')]
+
+    s = _normalize_resource(['here:admin', 'there', 'nowhere:user'])
+    assert list(s) == [('here', 'admin'), ('there', 'all'), ('nowhere', 'user')]
+
+    s = _normalize_resource('here:admin, there, nowhere:user')
+    assert list(s) == [('here', 'admin'), ('there', 'all'), ('nowhere', 'user')]
+
+    s = _normalize_resource('my,:,:ro')
+    assert list(s) == [('my', 'all'), ('any', 'all'), ('any', 'ro')]
 
 
-test_normalize_resource()
+def test_resolve():
+    r = _resolve('me', 'me')
+    assert r == {'all'}
+
+    r = _resolve('me', 'mememe')
+    assert r == {'all'}
+
+    r = _resolve('mememe', 'me')
+    assert r == set()
+
+    r = _resolve('me', 'mememe:ro, meme:rw')
+    assert r == {'ro', 'rw'}
+
+    r = _resolve('me', 'xmememe:ro, meme:rw')
+    assert r == {'rw'}
+
+
+def test_allowed():
+    a = allowed('me', 'me', 'all')
+    assert a
+
+    a = allowed('me', 'they:ro, meme:rw', 'rw')
+    assert a
+
+    a = allowed('me', 'ther:ro, meme:rw', 'ro')
+    assert not a
+
+
+def test_authenticator():
+    auth = Authenticator('me', 'me:ro')
+    a = auth.allowed('ro')
+    assert a
+
+    a = auth.allowed('all')
+    assert not a

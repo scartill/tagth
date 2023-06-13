@@ -1,4 +1,4 @@
-
+TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
 ANYONE_PRINCIPAL = 'any'
 FULL_ACCESS_ACTION = 'all'
@@ -23,9 +23,10 @@ def _normalize_principal(principal):
         if not isinstance(item, str):
             raise TagthValidationError(f'Bad principal tag {item}')
 
-        return item
+        return item.strip()
 
     principal = principal() if callable(principal) else principal
+    principal = principal.split(TAG_LIST_DELIMETER) if isinstance(principal, str) else principal
     principal = principal if isinstance(principal, list) else [principal]
     return map(norm_item, principal)
 
@@ -47,14 +48,18 @@ def _normalize_resource(resource):
         if not tag:
             tag = ANYONE_PRINCIPAL
 
+        action = None
+
         if len(pair) == 2:
             action = pair[1]
-        else:
+
+        if not action:
             action = FULL_ACCESS_ACTION
 
-        return (tag, action)
+        return (tag.strip(), action.strip())
 
     resource = resource() if callable(resource) else resource
+    resource = resource.split(TAG_LIST_DELIMETER) if isinstance(resource, str) else resource
     resource = resource if isinstance(resource, list) else [resource]
     return map(norm_item, resource)
 
@@ -81,3 +86,22 @@ def _resolve_internal(principal, resource):
                 actions.add(action)
 
     return actions
+
+
+def _resolve(principal, resource):
+    principal = list(_normalize_principal(principal))
+    resource = list(_normalize_resource(resource))
+    return _resolve_internal(principal, resource)
+
+
+def allowed(principal, resource, action):
+    return action in _resolve(principal, resource)
+
+
+class Authenticator():
+    def __init__(self, principal, resource):
+        self._principal = principal
+        self._resource = resource
+
+    def allowed(self, action):
+        return allowed(self._principal, self._resource, action)
