@@ -72,6 +72,17 @@ def test_allowed():
     assert not a
 
 
+def test_root():
+    a = allowed('a', 'a:ro', 'ro')
+    assert a
+
+    a = allowed('a', 'a:ro', 'rw')
+    assert not a
+
+    a = allowed('a,root', 'a:ro', 'rw')
+    assert a
+
+
 def test_authenticator():
     auth = Authenticator('me', 'me:ro')
     a = auth.allowed('ro')

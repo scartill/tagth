@@ -2,6 +2,7 @@ TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
 ANYONE_PRINCIPAL = 'any'
 FULL_ACCESS_ACTION = 'all'
+ROOT_PRINCIPAL = 'root'
 
 
 class TagthException(Exception):
@@ -80,6 +81,9 @@ def _resolve_internal(principal, resource):
     for pr_tag in principal:
         if not pr_tag:
             continue
+
+        if pr_tag == ROOT_PRINCIPAL:
+            actions.add(FULL_ACCESS_ACTION)
 
         for (res_tag, action) in resource:
             if res_tag.startswith(pr_tag):
