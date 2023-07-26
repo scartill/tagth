@@ -1,18 +1,9 @@
-import pytest
-
 from tagth import _normalize_principal, _normalize_resource, _resolve, allowed
-from tagth import Authenticator, TagthNoAccess
 
 
 def test_normalize_principal():
     p = _normalize_principal('me')
     assert list(p) == ['me']
-
-    p = _normalize_principal(lambda: 'these')
-    assert list(p) == ['these']
-
-    p = _normalize_principal(['this', 'that', lambda: 'those'])
-    assert list(p) == ['this', 'that', 'those']
 
     p = _normalize_principal('this,that, those')
     assert list(p) == ['this', 'that', 'those']
@@ -21,12 +12,6 @@ def test_normalize_principal():
 def test_normalize_resource():
     s = _normalize_resource('me')
     assert list(s) == [('me', 'all')]
-
-    s = _normalize_resource(lambda: ['this', 'that:ro'])
-    assert list(s) == [('this', 'all'), ('that', 'ro')]
-
-    s = _normalize_resource(['here:admin', 'there', 'nowhere:user'])
-    assert list(s) == [('here', 'admin'), ('there', 'all'), ('nowhere', 'user')]
 
     s = _normalize_resource('here:admin, there, nowhere:user')
     assert list(s) == [('here', 'admin'), ('there', 'all'), ('nowhere', 'user')]
@@ -83,19 +68,14 @@ def test_root():
     assert a
 
 
-def test_authenticator():
-    auth = Authenticator('me', 'me:ro')
-    a = auth.allowed('ro')
+def test_emply_resource():
+    a = allowed('root', '', 'all')
     assert a
 
-    a = auth.allowed('all')
+    a = allowed('nonroot', '', 'all')
     assert not a
+    
 
-
-def test_authenticator_throw():
-    auth = Authenticator('me', 'me:ro', throw=True)
-    a = auth.allowed('ro')
-    assert a
-
-    with pytest.raises(TagthNoAccess):
-        a = auth.allowed('all')
+def test_normalize_emply():
+    n = _normalize_resource('')
+    assert not n

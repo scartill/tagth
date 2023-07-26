@@ -13,32 +13,19 @@ class TagthValidationError(TagthException):
     pass
 
 
-class TagthNoAccess(TagthException):
-    pass
-
-
 def _normalize_principal(principal):
     def norm_item(item):
-        item = item() if callable(item) else item
-
-        if not isinstance(item, str):
-            raise TagthValidationError(f'Bad principal tag {item}')
-
         return item.strip()
 
-    principal = principal() if callable(principal) else principal
-    principal = principal.split(TAG_LIST_DELIMETER) if isinstance(principal, str) else principal
-    principal = principal if isinstance(principal, list) else [principal]
+    if not isinstance(principal, str):
+        raise TagthValidationError(f'Bad principal {principal}')
+
+    principal = principal.split(TAG_LIST_DELIMETER)
     return map(norm_item, principal)
 
 
 def _normalize_resource(resource):
     def norm_item(item):
-        item = item() if callable(item) else item
-
-        if not isinstance(item, str):
-            raise TagthValidationError(f'Bad resource tag {item}')
-
         pair = item.split(ACTION_DELIMETER)
 
         if len(pair) > 2:
@@ -59,32 +46,34 @@ def _normalize_resource(resource):
 
         return (tag.strip(), action.strip())
 
-    resource = resource() if callable(resource) else resource
-    resource = resource.split(TAG_LIST_DELIMETER) if isinstance(resource, str) else resource
-    resource = resource if isinstance(resource, list) else [resource]
+    if not resource:
+        return []
+
+    if not isinstance(resource, str):
+        raise TagthValidationError(f'Bad principal {resource}')
+
+    resource = resource.split(TAG_LIST_DELIMETER)
     return map(norm_item, resource)
 
 
 def _resolve_internal(principal, resource):
     actions = set()
 
+    if not principal:
+        return actions
+
+    for pr_tag in principal:
+        if pr_tag == ROOT_PRINCIPAL:
+            actions.add(FULL_ACCESS_ACTION)
+
     if not resource:
-        return
+        return actions
 
     for (res_tag, action) in resource:
         if res_tag == ANYONE_PRINCIPAL:
             actions.add(action)
 
-    if not principal:
-        return
-
     for pr_tag in principal:
-        if not pr_tag:
-            continue
-
-        if pr_tag == ROOT_PRINCIPAL:
-            actions.add(FULL_ACCESS_ACTION)
-
         for (res_tag, action) in resource:
             if res_tag.startswith(pr_tag):
                 actions.add(action)
@@ -101,18 +90,3 @@ def _resolve(principal, resource):
 def allowed(principal, resource, action):
     actions = _resolve(principal, resource)
     return action in actions or FULL_ACCESS_ACTION in actions
-
-
-class Authenticator():
-    def __init__(self, principal, resource, throw=False):
-        self._principal = principal
-        self._resource = resource
-        self._throw = throw
-
-    def allowed(self, action):
-        is_allowed = allowed(self._principal, self._resource, action)
-
-        if self._throw and not is_allowed:
-            raise TagthNoAccess()
-
-        return is_allowed
