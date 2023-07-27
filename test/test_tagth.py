@@ -74,7 +74,7 @@ def test_emply_resource():
 
     a = allowed('nonroot', '', 'all')
     assert not a
-    
+
 
 def test_normalize_emply():
     n = _normalize_resource('')
