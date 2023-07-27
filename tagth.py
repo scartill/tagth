@@ -3,6 +3,7 @@ ACTION_DELIMETER = ':'
 ANYONE_PRINCIPAL = 'any'
 FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
+VOID_PRINCIPAL = 'void'
 
 
 class TagthException(Exception):
@@ -17,8 +18,11 @@ def _normalize_principal(principal):
     def norm_item(item):
         tag = item.strip()
 
-        if not tag.isalnum():
-            raise TagthValidationError(f'Special characters in principal tag: {item}')
+        if not tag:
+            tag = VOID_PRINCIPAL
+
+        if not tag.isidentifier():
+            raise TagthValidationError(f'Special characters in principal tag: {tag}')
 
         return tag
 
@@ -55,7 +59,7 @@ def _normalize_resource(resource):
         if not tag.isidentifier():
             raise TagthValidationError(f'Special characters in resource tag: {tag}')
 
-        if not action.isalnum():
+        if not action.isidentifier():
             raise TagthValidationError(f'Special characters in resource action: {action}')
 
         return (tag, action)
@@ -73,9 +77,6 @@ def _normalize_resource(resource):
 def _resolve_internal(principal, resource):
     actions = set()
 
-    if not principal:
-        return actions
-
     for pr_tag in principal:
         if pr_tag == ROOT_PRINCIPAL:
             actions.add(FULL_ACCESS_ACTION)
@@ -88,6 +89,9 @@ def _resolve_internal(principal, resource):
             actions.add(action)
 
     for pr_tag in principal:
+        if pr_tag == VOID_PRINCIPAL:
+            continue
+
         for (res_tag, action) in resource:
             if res_tag.startswith(pr_tag):
                 actions.add(action)

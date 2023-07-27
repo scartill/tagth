@@ -76,6 +76,37 @@ def test_emply_resource():
     assert not a
 
 
+def test_emply_principal():
+    a = allowed('', 'resource', 'action')
+    assert not a
+
+    a = allowed(',', 'resource', 'action')
+    assert not a
+
+    a = allowed(',res', 'resource', 'action')
+    assert a
+
+    a = allowed(',res', 'other,resource', 'action')
+    assert a
+
+    a = allowed('other,another', 'other,resource', 'action')
+    assert a
+
+    a = allowed('other,another', 'another:action', 'action')
+    assert a
+
+    a = allowed('other,another', 'another:inaction', 'action')
+    assert not a
+
+
+def test_void():
+    a = allowed('resource', 'resource', 'action')
+    assert a
+
+    a = allowed('void', 'void', 'action')
+    assert not a
+
+
 def test_normalize_emply():
     n = _normalize_resource('')
     assert not n
