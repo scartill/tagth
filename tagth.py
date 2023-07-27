@@ -15,7 +15,12 @@ class TagthValidationError(TagthException):
 
 def _normalize_principal(principal):
     def norm_item(item):
-        return item.strip()
+        tag = item.strip()
+
+        if not tag.isalnum():
+            raise TagthValidationError(f'Special characters in principal tag: {item}')
+
+        return tag
 
     if not isinstance(principal, str):
         raise TagthValidationError(f'Bad principal {principal}')
@@ -44,7 +49,16 @@ def _normalize_resource(resource):
         if not action:
             action = FULL_ACCESS_ACTION
 
-        return (tag.strip(), action.strip())
+        tag = tag.strip()
+        action = action.strip()
+
+        if not tag.isidentifier():
+            raise TagthValidationError(f'Special characters in resource tag: {tag}')
+
+        if not action.isalnum():
+            raise TagthValidationError(f'Special characters in resource action: {action}')
+
+        return (tag, action)
 
     if not resource:
         return []
@@ -90,3 +104,21 @@ def _resolve(principal, resource):
 def allowed(principal, resource, action):
     actions = _resolve(principal, resource)
     return action in actions or FULL_ACCESS_ACTION in actions
+
+
+def validate_principal(principal):
+    try:
+        _normalize_principal(principal)
+    except TagthValidationError:
+        return False
+
+    return True
+
+
+def validate_resource(resource):
+    try:
+        _normalize_resource(resource)
+    except TagthValidationError:
+        return False
+
+    return True

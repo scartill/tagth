@@ -24,7 +24,7 @@ def test_resolve():
     r = _resolve('me', 'me')
     assert r == {'all'}
 
-    r = _resolve('me', 'mememe')
+    r = _resolve('me', 'meme_me')
     assert r == {'all'}
 
     r = _resolve('mememe', 'me')
