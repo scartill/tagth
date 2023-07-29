@@ -107,6 +107,23 @@ def test_void():
     assert not a
 
 
+def test_empty_anyoune():
+    a = allowed('', 'any:action', 'action')
+    assert a
+
+    a = allowed('', 'any:action', 'inaction')
+    assert not a
+
+    a = allowed('', 'any:all', 'action')
+    assert a
+
+    a = allowed('', 'any', 'inaction')    
+    assert a
+
+    a = allowed('', '', 'action')
+    assert not a
+
+
 def test_normalize_emply():
     n = _normalize_resource('')
     assert not n
