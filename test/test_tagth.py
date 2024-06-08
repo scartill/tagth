@@ -117,7 +117,7 @@ def test_empty_anyoune():
     a = allowed('', 'any:all', 'action')
     assert a
 
-    a = allowed('', 'any', 'inaction')    
+    a = allowed('', 'any', 'inaction')
     assert a
 
     a = allowed('', '', 'action')
@@ -127,3 +127,11 @@ def test_empty_anyoune():
 def test_normalize_emply():
     n = _normalize_resource('')
     assert not n
+
+
+def test_action_prefixes():
+    assert allowed('user', 'user:a_class_action', 'a_class_action')
+    assert allowed('user', 'user:a_class', 'a_class_one')
+    assert allowed('user', 'user:a_class', 'a_class_two')
+    assert not allowed('user', 'user:b_class', 'a_class_action')
+    assert not allowed('user', 'user:a_class', 'b_class_action')

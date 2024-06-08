@@ -107,7 +107,15 @@ def _resolve(principal, resource):
 
 def allowed(principal, resource, action):
     actions = _resolve(principal, resource)
-    return action in actions or FULL_ACCESS_ACTION in actions
+
+    if FULL_ACCESS_ACTION in actions:
+        return True
+
+    for allowed_action in actions:
+        if action.startswith(allowed_action):
+            return True
+
+    return False
 
 
 def validate_principal(principal):
