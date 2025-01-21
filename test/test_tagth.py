@@ -1,4 +1,4 @@
-from tagth import _normalize_principal, _normalize_resource, _resolve, allowed
+from tagth.tagth import _normalize_principal, _normalize_resource, _resolve, allowed
 
 
 def test_normalize_principal():

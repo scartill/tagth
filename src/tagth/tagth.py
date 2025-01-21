@@ -4,6 +4,7 @@ ANYONE_PRINCIPAL = 'any'
 FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
+VOID_RESOURCE = ''
 
 
 class TagthException(Exception):
@@ -30,7 +31,7 @@ def _normalize_principal(principal):
         raise TagthValidationError(f'Bad principal {principal}')
 
     principal = principal.split(TAG_LIST_DELIMETER)
-    return map(norm_item, principal)
+    return list(map(norm_item, principal))
 
 
 def _normalize_resource(resource):
@@ -76,7 +77,7 @@ def _normalize_resource(resource):
         raise TagthValidationError(f'Bad principal {resource}')
 
     resource = resource.split(TAG_LIST_DELIMETER)
-    return map(norm_item, resource)
+    return list(map(norm_item, resource))
 
 
 def _resolve_internal(principal, resource):
@@ -105,8 +106,8 @@ def _resolve_internal(principal, resource):
 
 
 def _resolve(principal, resource):
-    principal = list(_normalize_principal(principal))
-    resource = list(_normalize_resource(resource))
+    principal = _normalize_principal(principal)
+    resource = _normalize_resource(resource)
     return _resolve_internal(principal, resource)
 
 
