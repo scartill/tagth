@@ -1,13 +1,17 @@
 [project]
 name = "tagth"
-version = "0.1.0"
-description = "Pure Python Stateless Tag-Based Authorization library"
+version = "1.0.0"
+description = "Pure Python Stateless Tag-Based Authorization Library"
 authors = [
     { name = "Boris Resnick", email = "boris.resnick@gmail.com" }
 ]
 dependencies = []
 readme = "README.md"
 requires-python = ">= 3.8"
+license = { file = "LICENSE" }
+
+[project.urls]
+Homepage = "https://github.com/scartill/tagth"
 
 [build-system]
 requires = ["hatchling"]
@@ -17,10 +21,12 @@ build-backend = "hatchling.build"
 managed = true
 dev-dependencies = [
     "pytest>=8.2.2",
+    "twine"
 ]
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/tagth"]
