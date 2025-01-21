@@ -1,4 +1,4 @@
-# Stateless Tag-Based Authorization library
+# Stateless Tag-Based Authorization Library
 
 ## Background
 
