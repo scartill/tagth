@@ -1,7 +1,7 @@
 [project]
 name = "tagth"
 version = "0.1.0"
-description = "Pure Python stateless tag-based authorization library"
+description = "Pure Python Stateless Tag-Based Authorization library"
 authors = [
     { name = "Boris Resnick", email = "boris.resnick@gmail.com" }
 ]
