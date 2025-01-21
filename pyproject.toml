@@ -1,6 +1,6 @@
 [project]
 name = "tagth"
-version = "1.0.0"
+version = "1.0.1"
 description = "Pure Python Stateless Tag-Based Authorization Library"
 authors = [
     { name = "Boris Resnick", email = "boris.resnick@gmail.com" }
@@ -26,7 +26,6 @@ dev-dependencies = [
 
 [tool.hatch.metadata]
 allow-direct-references = true
-
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/tagth"]
