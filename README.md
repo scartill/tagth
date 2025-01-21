@@ -2,7 +2,7 @@
 
 ## Background
 
-Traditional role-based authorization models are not flexible enough to cover all required use cases. On the other side, full-managed ACLs are too complex for account managers to handle. We need a simple and flexible authorization model that can be easily implemented and maintained.
+Traditional role-based authorization models are not flexible enough to cover all required use cases. On the other side, full-managed ACLs are too complex for account managers to handle. `tagth` is a simple and flexible authorization model that can be easily implemented and maintained.
 
 ## Tag-Based Authorization
 
@@ -18,7 +18,7 @@ The model adheres to the following principles:
 
 ### Principal and Principal Tags
 
-A Principal is an acting entity. A Principal can be a user, a role, a group, or any other entity that can perform actions. *NB: In the current implementation, a Principal is only a user.*
+A Principal is an acting entity. A Principal can be a user, a role, a group, or any other entity that can perform actions.
 
 Principal’s auth tag string looks like a comma-separated list of tags: `tag_one, tag_two, tag_three`. Each tag should be a string that is a valid Python identifier.
 
