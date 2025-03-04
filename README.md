@@ -27,7 +27,7 @@ A supertag is a tag that is a prefix of another tag. For example, `admin` is a s
 A principal is said to possess a tag if the tag or its supertag exists in the principal’s auth tag string.
 
 Special values:
-* `void` (can only access resources with `any` access, see below),
+* `void` (can only access resources with `anyone` access, see below),
 * `root` (unlimited access).
 
 ### Resource and Resource Tags
@@ -46,10 +46,8 @@ An action is allowed for a principal if it possesses:
 * the `root` tag
 
 Special values:
-* `any` resource tag (any principal is allowed to perform action).
+* `anyone` resource tag (any principal is allowed to perform action).
 * `all` action (all action are allowed).
-
-Actions may be omitted (`tag_one` is equivalent to `tag_one:all`), tags can be omitted (`:read` is equivalent to `any:read`), or both (`:` means `any:all` - unlimited access for all).
 
 ### Access Resolution
 
@@ -110,7 +108,7 @@ allowed(principal_tags, resource_tags, "create_asset")  # Returns True
 ```python
 # 'any' resource tag allows access to all principals
 principal_tags = 'basic_user'
-resource_tags = 'any:read'
+resource_tags = 'anyone:read'
 allowed(principal_tags, resource_tags, 'read')  # Returns True
 
 # 'all' action allows all actions
@@ -118,10 +116,4 @@ principal_tags = 'content'
 resource_tags = 'content:all'
 allowed(principal_tags, resource_tags, 'read')  # Returns True
 allowed(principal_tags, resource_tags, 'write')  # Returns True
-
-resource_tags = ":read"  # Equivalent to "any:read"
-allowed(principal_tags, resource_tags, "read")  # Returns True
-
-resource_tags = ":"  # Equivalent to "any:all"
-allowed(principal_tags, resource_tags, "any_action")  # Returns True
 ```
