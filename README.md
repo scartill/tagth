@@ -66,8 +66,8 @@ The resolution is binary: either the action is allowed or not.
 from tagth import allowed
 
 # A regular user with basic permissions
-principal_tags = 'user, content_viewer'
-resource_tags = 'content:read, metadata:write"
+principal_tags = "user, content_viewer"
+resource_tags = "content:read, metadata:write"
 
 # Check if user can read content
 allowed(principal_tags, resource_tags, "read")  # Returns True
@@ -80,7 +80,7 @@ allowed(principal_tags, resource_tags, "anything")  # Returns True
 
 # Void user can only access 'any' resources
 void_tags = "void"
-allowed(void_tags, "any:read", "read")  # Returns True
+allowed(void_tags, "anyone:read", "read")  # Returns True
 allowed(principal_tags, "content:read", "read")  # Returns False
 ```
 
@@ -107,13 +107,13 @@ allowed(principal_tags, resource_tags, "create_asset")  # Returns True
 
 ```python
 # 'any' resource tag allows access to all principals
-principal_tags = 'basic_user'
-resource_tags = 'anyone:read'
-allowed(principal_tags, resource_tags, 'read')  # Returns True
+principal_tags = "basic_user"
+resource_tags = "anyone:read"
+allowed(principal_tags, resource_tags, "read")  # Returns True
 
 # 'all' action allows all actions
-principal_tags = 'content'
-resource_tags = 'content:all'
-allowed(principal_tags, resource_tags, 'read')  # Returns True
-allowed(principal_tags, resource_tags, 'write')  # Returns True
+principal_tags = "content"
+resource_tags = "content:all"
+allowed(principal_tags, resource_tags, "read")  # Returns True
+allowed(principal_tags, resource_tags, "write")  # Returns True
 ```
