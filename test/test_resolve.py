@@ -26,7 +26,6 @@ def test_empty_principle():
     a = _resolve(p, r)
     assert a == set()
 
-    # check the expected result
     p = ""
     r = "anyone:read"
     a = _resolve(p, r)
@@ -168,7 +167,6 @@ def test_principal_tags_and_supertags():
     assert a == {"write", "delete"}
 
 
-# failed tests, need checking
 def test_principal_tag_start_with_resource_1():
     p = "user, content_viewer"
     r = "content:read, metadata:write"
