@@ -26,6 +26,11 @@ def test_empty_principle():
     a = _resolve(p, r)
     assert a == set()
 
+    p = ","
+    r = "user:read"
+    a = _resolve(p, r)
+    assert a == set()
+
     p = ""
     r = "anyone:read"
     a = _resolve(p, r)

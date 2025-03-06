@@ -1,40 +1,23 @@
+import pytest
+
 from tagth.tagth import allowed
 
 
-def test_regular_user_with_basic_permission_1():
-    p = "user, content_view"
-    r = "content:read, metatdata:write"
-    assert allowed(p, r, "read")
+@pytest.mark.parametrize(
+    "p, r, action, expected",
+    [
+        ("user, content_view", "content:read, metatdata:write", "read", True),
+        ("admin, content_view", "content:read, admin:write", "write", True),
+        ("user, content_view", "content:read, metatdata:write", "delete", False),
+        ("content_viewer", "content:view", "view", True),
+        ("admin", "admin:write", "write", True),
+        ("admin", "admin:write", "admin:write", False),
+        ("content_viewer", "content:view", "view_more", False)
 
-
-def test_regular_user_with_basic_permission_2():
-    p = "admin, content_view"
-    r = "content:read, admin:write"
-    assert allowed(p, r, "write")
-
-
-def test_regular_user_with_basic_permission_3():
-    p = "user, content_view"
-    r = "content:read, metatdata:write"
-    assert not allowed(p, r, "delete")
-
-
-def test_regular_user_with_basic_permission_4():
-    p = "content_viewer"
-    r = "content:view"
-    assert allowed(p, r, "view")
-
-
-def test_regular_user_with_basic_permission_5():
-    p = "admin"
-    r = "admin:write"
-    assert allowed(p, r, "write")
-
-
-def test_regular_user_with_basic_permission_6():
-    p = "admin"
-    r = "admin:write"
-    assert not allowed(p, r, "delete")
+    ]
+)
+def test_regular_user_with_basic_permission(p, r, action, expected):
+    assert allowed(p, r, action) == expected
 
 
 def test_principal_with_partial_action_match():
@@ -99,7 +82,6 @@ def test_root_has_full_access():
 
     r = "any:read"
     assert allowed(p, r, "read")
- 
 
     r = "anyone:read"
     assert allowed(p, r, "write")
