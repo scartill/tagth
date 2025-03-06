@@ -66,54 +66,54 @@ The resolution is binary: either the action is allowed or not.
 from tagth import allowed
 
 # A regular user with basic permissions
-principal_tags = "user, content_viewer"
-resource_tags = "content:read, metadata:write"
+principal_tags = 'user, content_viewer'
+resource_tags = 'content:read, metadata:write'
 
 # Check if user can read content
-allowed(principal_tags, resource_tags, "read")  # Returns True
+allowed(principal_tags, resource_tags, 'read')  # Returns True
 # Check if user can delete content
-allowed(principal_tags, resource_tags, "delete")  # Returns False
+allowed(principal_tags, resource_tags, 'delete')  # Returns False
 
 # Root user has unlimited access
-principal_tags = "root"
-allowed(principal_tags, resource_tags, "anything")  # Returns True
+principal_tags = 'root'
+allowed(principal_tags, resource_tags, 'anything')  # Returns True
 
 # Void user can only access 'any' resources
-void_tags = "void"
-allowed(void_tags, "anyone:read", "read")  # Returns True
-allowed(principal_tags, "content:read", "read")  # Returns False
+void_tags = 'void'
+allowed(void_tags, 'anyone:read', 'read')  # Returns True
+allowed(principal_tags, 'content:read', 'read')  # Returns False
 ```
 
 ### Supertags and Superactions
 
 ```python
 # Principal tags can be supertags
-principal_tags = "admin"
-resource_tags = "admin_user:write, admin_content:delete"
+principal_tags = 'admin'
+resource_tags = 'admin_user:write, admin_content:delete'
 
 # 'admin' is a supertag of 'admin_user' and 'admin_content'
-allowed(principal_tags, resource_tags, "write")  # Returns True
-allowed(principal_tags, resource_tags, "delete")  # Returns True
+allowed(principal_tags, resource_tags, 'write')  # Returns True
+allowed(principal_tags, resource_tags, 'delete')  # Returns True
 
 # Actions can have superactions
-principal_tags = "content_manager"
-resource_tags = "content:create"
+principal_tags = 'content_manager'
+resource_tags = 'content:create'
 
 # 'create' is a superaction of 'create_asset'
-allowed(principal_tags, resource_tags, "create_asset")  # Returns True
+allowed(principal_tags, resource_tags, 'create_asset')  # Returns True
 ```
 
 ### Special Values
 
 ```python
 # 'any' resource tag allows access to all principals
-principal_tags = "basic_user"
-resource_tags = "anyone:read"
-allowed(principal_tags, resource_tags, "read")  # Returns True
+principal_tags = 'basic_user'
+resource_tags = 'anyone:read'
+allowed(principal_tags, resource_tags, 'read')  # Returns True
 
 # 'all' action allows all actions
-principal_tags = "content"
-resource_tags = "content:all"
-allowed(principal_tags, resource_tags, "read")  # Returns True
-allowed(principal_tags, resource_tags, "write")  # Returns True
+principal_tags = 'content'
+resource_tags = 'content:all'
+allowed(principal_tags, resource_tags, 'read')  # Returns True
+allowed(principal_tags, resource_tags, 'write')  # Returns True
 ```
