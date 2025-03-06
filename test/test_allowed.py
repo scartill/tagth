@@ -52,22 +52,15 @@ def test_invalid_resource():
     assert not allowed(p, r, "view")
 
 
-def test_multiple_actions_on_resource():
-    p = "admin"
-    r = "admin:view, admin:edit"
-    assert allowed(p, r, "edit")
-
-
-def test_principal_multiple_actions_1():
-    p = "content_viewer"
-    r = "content:view, content:edit"
-    assert allowed(p, r, "edit")
-
-
-def test_principal_multiple_actions_2():
-    p = "user"
-    r = "user:read, user:edit"
-    assert allowed(p, r, "read")
+@pytest.mark.parametrize(
+    "p, r, action, expected",
+    [
+        ("admin", "admin:view, admin:edit", "edit", True),
+        ("content_viewer", "content:view, content:edit", "edit", True)
+    ]
+)
+def test__multiple_actions(p, r, action, expected):
+    assert allowed(p, r, action) == expected
 
 
 def test_root_has_full_access():
@@ -110,21 +103,18 @@ def test_principal_tags_and_supertags():
     assert not allowed(p, r, "read")
 
 
-def test_superactions_1():
-    p = "content_viewer"
-    r = "content:create"
-
-    assert allowed(p, r, "create")
-    assert allowed(p, r, "create_assest")
-
-
-def test_superactions_2():
-    p = "admin"
-    r = "admin:create"
-
-    assert allowed(p, r, "create")
-    assert allowed(p, r, "create_assest")
-    assert not allowed(p, r, "write_message")
+@pytest.mark.parametrize(
+    "p, r, action, expected",
+    [
+        ("content_viewer", "content:create", "create", True),
+        ("content_viewer", "content:create", "create_assest", True),
+        ("admin", "admin:create", "create", True),
+        ("admin", "admin:create", "create_assest", True),
+        ("admin", "admin:create", "write_message", False)
+    ]
+)
+def test_superactions(p, r, action, expected):
+    assert allowed(p, r, action) == expected
 
 
 def test_any_resource():
