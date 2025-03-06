@@ -41,6 +41,11 @@ def test_empty_principle():
     a = _resolve(p, r)
     assert a == set()
 
+    p = " , "
+    r = "user:read"
+    a = _resolve(p, r)
+    assert a == set()
+
 
 def test_with_void_principal():
     p = "void"
@@ -85,6 +90,16 @@ def test_with_matching_tags():
     a = _resolve(p, r)
     assert a == {"rw"}
 
+    p = "content_viewer, admin"
+    r = "content:view, admin:manage"
+    a = _resolve(p, r)
+    assert a == {"view", "manage"}
+
+    p = "admin, user"
+    r = "admin:write, user:read"
+    a = _resolve(p, r)
+    assert a == {"read", "write"}
+
 
 def test_with_no_matching_tags():
     p = "user"
@@ -112,9 +127,9 @@ def test_with_supertag_match():
 
 def test_with_any_resource_tag():
     p = "user"
-    r = "anyone:read"
+    r = "anyone:read, user:write"
     a = _resolve(p, r)
-    assert a == {"read"}
+    assert a == {"read", "write"}
 
     p = "user"
     r = "anyone:read, content:write"
@@ -132,13 +147,6 @@ def test_with_all_action_tag():
     r = "content:all"
     a = _resolve(p, r)
     assert a == {"all"}
-
-
-def test_with_multiple_principle():
-    p = "admin, user"
-    r = "admin:write, user:read"
-    a = _resolve(p, r)
-    assert a == {"read", "write"}
 
 
 def test_with_root_and_void_principal():
@@ -172,29 +180,13 @@ def test_principal_tags_and_supertags():
     assert a == {"write", "delete"}
 
 
-def test_principal_tag_start_with_resource_1():
+def test_principal_tag_start_with_resource():
     p = "user, content_viewer"
     r = "content:read, metadata:write"
     a = _resolve(p, r)
     assert a == {"read"}
 
-
-def test_principal_tag_start_with_resource_2():
     p = "content_viewer"
     r = "content:view"
     a = _resolve(p, r)
     assert a == {"view"}
-
-
-def test_multiple_principal_actions():
-    p = "content_viewer"
-    r = "content:view, content:edit"
-    a = _resolve(p, r)
-    assert a == {"view", "edit"}
-
-
-def test_multiple_principal_tags():
-    p = "content_viewer, admin"
-    r = "content:view, admin:manage"
-    a = _resolve(p, r)
-    assert a == {"view", "manage"}

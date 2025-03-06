@@ -20,6 +20,31 @@ def test_regular_user_with_basic_permission(p, r, action, expected):
     assert allowed(p, r, action) == expected
 
 
+@pytest.mark.parametrize(
+    "p, r, action, expected",
+    [
+        ("content_viewer", "content:create", "create", True),
+        ("content_viewer", "content:create", "create_assest", True),
+        ("admin", "admin:create", "create", True),
+        ("admin", "admin:create", "create_assest", True),
+        ("admin", "admin:create", "write_message", False)
+    ]
+)
+def test_superactions(p, r, action, expected):
+    assert allowed(p, r, action) == expected
+
+
+@pytest.mark.parametrize(
+    "p, r, action, expected",
+    [
+        ("admin", "admin:view, admin:edit", "edit", True),
+        ("content_viewer", "content:view, content:edit", "edit", True)
+    ]
+)
+def test__multiple_actions(p, r, action, expected):
+    assert allowed(p, r, action) == expected
+
+
 def test_principal_with_partial_action_match():
     p = "content_viewer"
     r = "content:view"
@@ -50,17 +75,6 @@ def test_invalid_resource():
     p = "content:viewer"
     r = "content:view@"
     assert not allowed(p, r, "view")
-
-
-@pytest.mark.parametrize(
-    "p, r, action, expected",
-    [
-        ("admin", "admin:view, admin:edit", "edit", True),
-        ("content_viewer", "content:view, content:edit", "edit", True)
-    ]
-)
-def test__multiple_actions(p, r, action, expected):
-    assert allowed(p, r, action) == expected
 
 
 def test_root_has_full_access():
@@ -101,20 +115,6 @@ def test_principal_tags_and_supertags():
     assert allowed(p, r, "write")
     assert allowed(p, r, "delete")
     assert not allowed(p, r, "read")
-
-
-@pytest.mark.parametrize(
-    "p, r, action, expected",
-    [
-        ("content_viewer", "content:create", "create", True),
-        ("content_viewer", "content:create", "create_assest", True),
-        ("admin", "admin:create", "create", True),
-        ("admin", "admin:create", "create_assest", True),
-        ("admin", "admin:create", "write_message", False)
-    ]
-)
-def test_superactions(p, r, action, expected):
-    assert allowed(p, r, action) == expected
 
 
 def test_any_resource():

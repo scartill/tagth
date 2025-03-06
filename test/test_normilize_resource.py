@@ -68,7 +68,7 @@ def test_resource_without_colon():
         _normalize_resource("content, read")
 
 
-def test_resource_not_isidentifier():
+def test_not_isidentifier_resource():
     with pytest.raises(
         TagthValidationError,
         match=re.escape(

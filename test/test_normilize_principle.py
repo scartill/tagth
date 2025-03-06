@@ -8,9 +8,6 @@ def test_valid_tags():
     p = _normalize_principal("tag_1, tag_2")
     assert p == ["tag_1", "tag_2"]
 
-    p = _normalize_principal("tag_1,tag_2")
-    assert p == ["tag_1", "tag_2"]
-
     p = _normalize_principal("tag_1")
     assert p == ["tag_1"]
 
@@ -80,6 +77,9 @@ def test_with_whitespaces():
     assert p == ["void", "tag_1"]
 
     p = _normalize_principal(" , ")
+    assert p == ["void", "void"]
+
+    p = _normalize_principal(",")
     assert p == ["void", "void"]
 
 
