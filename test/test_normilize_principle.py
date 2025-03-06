@@ -8,6 +8,9 @@ def test_valid_tags():
     p = _normalize_principal("tag_1, tag_2")
     assert p == ["tag_1", "tag_2"]
 
+    p = _normalize_principal("tag_1,tag_2")
+    assert p == ["tag_1", "tag_2"]
+
     p = _normalize_principal("tag_1")
     assert p == ["tag_1"]
 
@@ -20,7 +23,7 @@ def test_empty_tag():
     assert p == ["void"]
 
 
-def test_empty_string_tag():
+def test_whitespace_tag():
     p = _normalize_principal(" ")
     assert p == ["void"]
 
@@ -62,6 +65,11 @@ def test_not_isidentifier_tag():
         TagthValidationError, match="Special characters in principal tag: tag@"
     ):
         _normalize_principal("tag@")
+
+    with pytest.raises(
+        TagthValidationError, match="Special characters in principal tag: tag_1 tag_2"
+    ):
+        _normalize_principal("tag_1 tag_2")
 
 
 def test_with_whitespaces():

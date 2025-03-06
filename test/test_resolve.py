@@ -171,7 +171,7 @@ def test_principal_tag_start_with_resource_1():
     p = "user, content_viewer"
     r = "content:read, metadata:write"
     a = _resolve(p, r)
-    assert a == {"write", "read"}
+    assert a == {"read"}
 
 
 def test_principal_tag_start_with_resource_2():
@@ -181,15 +181,15 @@ def test_principal_tag_start_with_resource_2():
     assert a == {"view"}
 
 
-def test_principal_multiple_actions():
+def test_multiple_principal_actions():
     p = "content_viewer"
     r = "content:view, content:edit"
     a = _resolve(p, r)
     assert a == {"view", "edit"}
 
 
-def test_principal_multiple_tags():
+def test_multiple_principal_tags():
     p = "content_viewer, admin"
     r = "content:view, admin:manage"
     a = _resolve(p, r)
-    assert a == {"view", "manage"} 
+    assert a == {"view", "manage"}
