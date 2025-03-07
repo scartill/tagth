@@ -1,6 +1,6 @@
 TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
-ANYONE_PRINCIPAL = 'any'
+ANYONE_PRINCIPAL = 'anyone'
 FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
@@ -43,24 +43,20 @@ def _normalize_resource(resource):
 
         pair = item.split(ACTION_DELIMETER)
 
-        if len(pair) > 2:
-            raise TagthValidationError(f'Too many fields on a resource tag: {item}')
+        if len(pair) != 2:
+            raise TagthValidationError(f'Invalid resource tag: {item} (tag and action required)')
 
         tag = pair[0]
+        tag = tag.strip()
 
         if not tag:
-            tag = ANYONE_PRINCIPAL
+            raise TagthValidationError(f'Invalid resource tag: {item} (tag required)')
 
-        action = None
-
-        if len(pair) == 2:
-            action = pair[1]
+        action = pair[1]
+        action = action.strip()
 
         if not action:
-            action = FULL_ACCESS_ACTION
-
-        tag = tag.strip()
-        action = action.strip()
+            raise TagthValidationError(f'Invalid resource tag: {item} (action required)')
 
         if not tag.isidentifier():
             raise TagthValidationError(f'Special characters in resource tag: {tag}')
@@ -74,7 +70,7 @@ def _normalize_resource(resource):
         return []
 
     if not isinstance(resource, str):
-        raise TagthValidationError(f'Bad principal {resource}')
+        raise TagthValidationError(f'Bad resource {resource}')
 
     resource = resource.split(TAG_LIST_DELIMETER)
     return list(map(norm_item, resource))

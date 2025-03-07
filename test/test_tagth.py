@@ -10,24 +10,24 @@ def test_normalize_principal():
 
 
 def test_normalize_resource():
-    s = _normalize_resource('me')
+    s = _normalize_resource('me:all')
     assert list(s) == [('me', 'all')]
 
-    s = _normalize_resource('here:admin, there, nowhere:user')
+    s = _normalize_resource('here:admin, there:all, nowhere:user')
     assert list(s) == [('here', 'admin'), ('there', 'all'), ('nowhere', 'user')]
 
-    s = _normalize_resource('my,:,:ro')
-    assert list(s) == [('my', 'all'), ('any', 'all'), ('any', 'ro')]
+    s = _normalize_resource('my:all,anyone:all,anyone:ro')
+    assert list(s) == [('my', 'all'), ('anyone', 'all'), ('anyone', 'ro')]
 
 
 def test_resolve():
-    r = _resolve('me', 'me')
+    r = _resolve('me', 'me:all')
     assert r == {'all'}
 
-    r = _resolve('me', 'meme_me')
+    r = _resolve('me', 'meme_me:all')
     assert r == {'all'}
 
-    r = _resolve('mememe', 'me')
+    r = _resolve('mememe', 'me:all')
     assert r == set()
 
     r = _resolve('me', 'mememe:ro, meme:rw')
@@ -38,16 +38,16 @@ def test_resolve():
 
 
 def test_allowed():
-    a = allowed('me', 'me', 'all')
+    a = allowed('me', 'me:all', 'all')
     assert a
 
-    a = allowed('me', 'me', 'ro')
+    a = allowed('me', 'me:all', 'ro')
     assert a
 
-    a = allowed('me', ':ro', 'ro')
+    a = allowed('me', 'anyone:ro', 'ro')
     assert a
 
-    a = allowed('me', 'any:ro', 'ro')
+    a = allowed('me', 'anyone:ro', 'ro')
     assert a
 
     a = allowed('me', 'they:ro, meme:rw', 'rw')
@@ -76,20 +76,20 @@ def test_emply_resource():
     assert not a
 
 
-def test_emply_principal():
-    a = allowed('', 'resource', 'action')
+def test_empty_principal():
+    a = allowed('', 'resource:all', 'action')
     assert not a
 
-    a = allowed(',', 'resource', 'action')
+    a = allowed(',', 'resource:all', 'action')
     assert not a
 
-    a = allowed(',res', 'resource', 'action')
+    a = allowed(',res', 'resource:all', 'action')
     assert a
 
-    a = allowed(',res', 'other,resource', 'action')
+    a = allowed(',res', 'other:all,resource:all', 'action')
     assert a
 
-    a = allowed('other,another', 'other,resource', 'action')
+    a = allowed('other,another', 'other:all,resource:all', 'action')
     assert a
 
     a = allowed('other,another', 'another:action', 'action')
@@ -100,25 +100,25 @@ def test_emply_principal():
 
 
 def test_void():
-    a = allowed('resource', 'resource', 'action')
+    a = allowed('resource', 'resource:all', 'action')
     assert a
 
-    a = allowed('void', 'void', 'action')
+    a = allowed('void', 'void:all', 'action')
     assert not a
 
 
-def test_empty_anyoune():
-    a = allowed('', 'any:action', 'action')
+def test_empty_anyone():
+    a = allowed('', 'anyone:action', 'action')
     assert a
 
-    a = allowed('', 'any:action', 'inaction')
+    a = allowed('', 'anyone:action', 'inaction')
     assert not a
 
-    a = allowed('', 'any:all', 'action')
+    a = allowed('', 'anyone:all', 'action')
     assert a
 
-    a = allowed('', 'any', 'inaction')
-    assert a
+    a = allowed('', 'anyone:inaction', 'action')
+    assert not a
 
     a = allowed('', '', 'action')
     assert not a
