@@ -31,11 +31,11 @@ def test_resource_is_whitespace():
 
 
 def test_invalid_type_resource():
-    with pytest.raises(TagthValidationError, match='Bad resourse 1'):
+    with pytest.raises(TagthValidationError, match='Bad resource 1'):
         _normalize_resource(1)
 
     with pytest.raises(
-        TagthValidationError, match=re.escape('Bad resourse [\'content:read\']')
+        TagthValidationError, match=re.escape('Bad resource [\'content:read\']')
     ):
         _normalize_resource(['content:read'])
 

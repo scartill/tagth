@@ -70,7 +70,7 @@ def _normalize_resource(resource):
         return []
 
     if not isinstance(resource, str):
-        raise TagthValidationError(f'Bad principal {resource}')
+        raise TagthValidationError(f'Bad resource {resource}')
 
     resource = resource.split(TAG_LIST_DELIMETER)
     return list(map(norm_item, resource))

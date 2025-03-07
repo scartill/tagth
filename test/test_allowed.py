@@ -1,6 +1,6 @@
 import pytest
 
-from tagth.tagth import allowed
+from tagth.tagth import allowed, TagthValidationError
 
 
 @pytest.mark.parametrize(
@@ -55,7 +55,8 @@ def test_empty_principal():
 def test_invalid_resource():
     p = 'content'
     r = 'content:view@'
-    assert not allowed(p, r, 'view')
+    with pytest.raises(TagthValidationError):
+        allowed(p, r, 'view')
 
 
 def test_root_has_full_access():
@@ -126,12 +127,12 @@ def test_special_format_any():
     p_void = 'void'
     p_user = 'user'
 
-    r = ':read'
+    r = 'anyone:read'
 
-    assert not allowed(p_root, r, 'read')
-    assert not allowed(p_void, r, 'read')
-    assert not allowed(p_user, r, 'read')
-    assert not allowed(p_root, r, 'write')
+    assert allowed(p_root, r, 'read')
+    assert allowed(p_void, r, 'read')
+    assert allowed(p_user, r, 'read')
+    assert allowed(p_root, r, 'write')
     assert not allowed(p_void, r, 'write')
     assert not allowed(p_user, r, 'write')
 
@@ -142,11 +143,11 @@ def test_special_format_all():
     p_user = 'user'
     p = 'another'
 
-    r = 'user:'
+    r = 'user:all'
 
-    assert not allowed(p_root, r, 'read')
+    assert allowed(p_root, r, 'read')
     assert not allowed(p_void, r, 'read')
-    assert not allowed(p_user, r, 'read')
+    assert allowed(p_user, r, 'read')
     assert not allowed(p, r, 'read')
 
 
@@ -169,11 +170,11 @@ def test_special_format_any_and_all():
     p_void = 'void'
     p_user = 'user'
 
-    r = ':'
+    r = 'anyone:all'
 
-    assert not allowed(p_root, r, 'read')
-    assert not allowed(p_void, r, 'read')
-    assert not allowed(p_user, r, 'read')
-    assert not allowed(p_root, r, 'all')
-    assert not allowed(p_void, r, 'all')
-    assert not allowed(p_user, r, 'all')
+    assert allowed(p_root, r, 'read')
+    assert allowed(p_void, r, 'read')
+    assert allowed(p_user, r, 'read')
+    assert allowed(p_root, r, 'all')
+    assert allowed(p_void, r, 'all')
+    assert allowed(p_user, r, 'all')
