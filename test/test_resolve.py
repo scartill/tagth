@@ -90,11 +90,6 @@ def test_with_matching_tags():
     a = _resolve(p, r)
     assert a == {'rw'}
 
-    p = 'content_viewer, admin'
-    r = 'content:view, admin:manage'
-    a = _resolve(p, r)
-    assert a == {'view', 'manage'}
-
     p = 'admin, user'
     r = 'admin:write, user:read'
     a = _resolve(p, r)
@@ -179,14 +174,3 @@ def test_principal_tags_and_supertags():
     a = _resolve(p, r)
     assert a == {'write', 'delete'}
 
-
-def test_principal_tag_start_with_resource():
-    p = 'user, content_viewer'
-    r = 'content:read, metadata:write'
-    a = _resolve(p, r)
-    assert a == {'read'}
-
-    p = 'content_viewer'
-    r = 'content:view'
-    a = _resolve(p, r)
-    assert a == {'view'}

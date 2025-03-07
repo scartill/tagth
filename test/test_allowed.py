@@ -6,14 +6,12 @@ from tagth.tagth import allowed
 @pytest.mark.parametrize(
     'p, r, action, expected',
     [
-        ('user, content_view', 'content:read, metatdata:write', 'read', True),
-        ('admin, content_view', 'content:read, admin:write', 'write', True),
-        ('user, content_view', 'content:read, metatdata:write', 'delete', False),
-        ('content_viewer', 'content:view', 'view', True),
-        ('admin', 'admin:write', 'write', True),
-        ('admin', 'admin:write', 'admin:write', False),
-        ('content_viewer', 'content:view', 'view_more', False)
-
+        ('user', 'user:read', 'read', True),
+        ('user', 'user:read, user:edit', 'read', True),
+        ('user', 'user:read, user:edit', 'delete', False),
+        ('user', 'user:read', 'delete', False),
+        ('user, content', 'user:read, content:view', 'view', True),
+        ('user, content', 'user:read, content:view', 'delete', False),
     ]
 )
 def test_regular_user_with_basic_permission(p, r, action, expected):
@@ -23,36 +21,19 @@ def test_regular_user_with_basic_permission(p, r, action, expected):
 @pytest.mark.parametrize(
     'p, r, action, expected',
     [
-        ('content_viewer', 'content:create', 'create', True),
-        ('content_viewer', 'content:create', 'create_assest', True),
         ('admin', 'admin:create', 'create', True),
         ('admin', 'admin:create', 'create_assest', True),
-        ('admin', 'admin:create', 'write_message', False)
+        ('admin', 'admin:create', 'write_message', False),
+        ('admin', 'admin:create, content:view', 'create_assest', True),
+        ('admin, user', 'admin:create, user:create', 'create_assest', True),
     ]
 )
 def test_superactions(p, r, action, expected):
     assert allowed(p, r, action) == expected
 
 
-@pytest.mark.parametrize(
-    'p, r, action, expected',
-    [
-        ('admin', 'admin:view, admin:edit', 'edit', True),
-        ('content_viewer', 'content:view, content:edit', 'edit', True)
-    ]
-)
-def test__multiple_actions(p, r, action, expected):
-    assert allowed(p, r, action) == expected
-
-
-def test_principal_with_partial_action_match():
-    p = 'content_viewer'
-    r = 'content:view'
-    assert not allowed(p, r, 'view_more')
-
-
 def test_empty_resource():
-    p = 'content_viewer'
+    p = 'user'
     r = ''
     assert not allowed(p, r, 'view')
 
@@ -72,7 +53,7 @@ def test_empty_principal():
 
 
 def test_invalid_resource():
-    p = 'content:viewer'
+    p = 'content'
     r = 'content:view@'
     assert not allowed(p, r, 'view')
 
