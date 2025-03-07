@@ -66,7 +66,7 @@ The resolution is binary: either the action is allowed or not.
 from tagth import allowed
 
 # A regular user with basic permissions
-principal_tags = 'user, content_viewer'
+principal_tags = 'user, content'
 resource_tags = 'content:read, metadata:write'
 
 # Check if user can read content
@@ -78,10 +78,10 @@ allowed(principal_tags, resource_tags, 'delete')  # Returns False
 principal_tags = 'root'
 allowed(principal_tags, resource_tags, 'anything')  # Returns True
 
-# Void user can only access 'any' resources
+# Void user can only access 'anyone' resources
 void_tags = 'void'
 allowed(void_tags, 'anyone:read', 'read')  # Returns True
-allowed(principal_tags, 'content:read', 'read')  # Returns False
+allowed(void_tags, 'content:read', 'read')  # Returns False
 ```
 
 ### Supertags and Superactions
@@ -96,7 +96,7 @@ allowed(principal_tags, resource_tags, 'write')  # Returns True
 allowed(principal_tags, resource_tags, 'delete')  # Returns True
 
 # Actions can have superactions
-principal_tags = 'content_manager'
+principal_tags = 'content'
 resource_tags = 'content:create'
 
 # 'create' is a superaction of 'create_asset'
@@ -106,7 +106,7 @@ allowed(principal_tags, resource_tags, 'create_asset')  # Returns True
 ### Special Values
 
 ```python
-# 'any' resource tag allows access to all principals
+# 'anyone' resource tag allows access to all principals
 principal_tags = 'basic_user'
 resource_tags = 'anyone:read'
 allowed(principal_tags, resource_tags, 'read')  # Returns True
