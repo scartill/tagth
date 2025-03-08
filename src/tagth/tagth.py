@@ -15,8 +15,8 @@ class TagthValidationError(TagthException):
     pass
 
 
-def _normalize_principal(principal):
-    def norm_item(item):
+def _normalize_principal(principal: str) -> list[str]:
+    def norm_item(item: str) -> str:
         tag = item.strip()
 
         if not tag:
@@ -34,8 +34,8 @@ def _normalize_principal(principal):
     return list(map(norm_item, principal))
 
 
-def _normalize_resource(resource):
-    def norm_item(item):
+def _normalize_resource(resource: str) -> list[tuple[str, str]]:
+    def norm_item(item: str) -> tuple[str, str]:
         item = item.strip()
 
         if not item:
@@ -76,7 +76,7 @@ def _normalize_resource(resource):
     return list(map(norm_item, resource))
 
 
-def _resolve_internal(principal, resource):
+def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:
     actions = set()
 
     for pr_tag in principal:
@@ -101,13 +101,13 @@ def _resolve_internal(principal, resource):
     return actions
 
 
-def _resolve(principal, resource):
+def _resolve(principal: str, resource: str) -> set[str]:
     principal = _normalize_principal(principal)
     resource = _normalize_resource(resource)
     return _resolve_internal(principal, resource)
 
 
-def allowed(principal, resource, action):
+def allowed(principal: str, resource: str, action: str) -> bool:
     actions = _resolve(principal, resource)
 
     if FULL_ACCESS_ACTION in actions:
@@ -120,7 +120,7 @@ def allowed(principal, resource, action):
     return False
 
 
-def validate_principal(principal):
+def validate_principal(principal: str) -> bool:
     try:
         _normalize_principal(principal)
     except TagthValidationError:
@@ -129,7 +129,7 @@ def validate_principal(principal):
     return True
 
 
-def validate_resource(resource):
+def validate_resource(resource: str) -> bool:
     try:
         _normalize_resource(resource)
     except TagthValidationError:
