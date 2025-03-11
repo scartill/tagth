@@ -1,3 +1,6 @@
+import re
+
+
 TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
 ANYONE_PRINCIPAL = 'anyone'
@@ -5,6 +8,8 @@ FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
 VOID_RESOURCE = ''
+ACTION_START_BRACE = '{'
+ACTION_END_BRACE = '}'
 
 
 class TagthException(Exception):
@@ -13,6 +18,25 @@ class TagthException(Exception):
 
 class TagthValidationError(TagthException):
     pass
+
+
+def resolve_multiple_actions(item):
+    item_list = item.split(ACTION_DELIMETER)
+
+    if len(item_list) != 2:
+        raise TagthValidationError(f'Invalid resource tag: {item} (tag and action required)')
+
+    resourse_tag = item_list[0]
+
+    action_list = item_list[1].split(TAG_LIST_DELIMETER)
+    result = []
+
+    for action in action_list:
+        action.strip()
+        action = action.replace(ACTION_START_BRACE, '', 1).replace(ACTION_END_BRACE, '', 1)
+        result.append(f'{resourse_tag}: {action}')
+
+    return result
 
 
 def _normalize_principal(principal: str) -> list[str]:
@@ -35,7 +59,7 @@ def _normalize_principal(principal: str) -> list[str]:
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
-    def norm_item(item: str) -> tuple[str, str]:
+    def norm_item(item):
         item = item.strip()
 
         if not item:
@@ -72,8 +96,16 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     if not isinstance(resource, str):
         raise TagthValidationError(f'Bad resource {resource}')
 
-    resource = resource.split(TAG_LIST_DELIMETER)
-    return list(map(norm_item, resource))
+    resource_list = re.split(r',\s*(?![^{}]*\})', resource)
+    result = []
+
+    for resource in resource_list:
+        if ACTION_START_BRACE in resource and ACTION_END_BRACE in resource:
+            result.extend(resolve_multiple_actions(resource))
+        else:
+            result.append(resource)
+
+    return list(map(norm_item, result))
 
 
 def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:

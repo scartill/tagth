@@ -15,17 +15,13 @@ def test_valid_resource():
     assert r == [('me', 'all'), ('anyone', 'all'), ('content', 'read')]
 
 
-def test_none_resource():
+def test_empty_resource():
     r = _normalize_resource(None)
     assert r == []
 
-
-def test_empty_resource():
     r = _normalize_resource('')
     assert r == []
 
-
-def test_resource_is_whitespace():
     r = _normalize_resource(' ')
     assert r == [('void', 'all')]
 
@@ -56,6 +52,20 @@ def test_resource_with_whitespace():
 
     r = _normalize_resource('content:read, ')
     assert r == [('content', 'read'), ('void', 'all')]
+
+    r = _normalize_resource(' ,resource_tag:{action_1, action_2}')
+    assert r == [
+        ('void', 'all'),
+        ('resource_tag', 'action_1'),
+        ('resource_tag', 'action_2')
+    ]
+
+    r = _normalize_resource('resource_tag:{action_1, action_2}, ')
+    assert r == [
+        ('resource_tag', 'action_1'),
+        ('resource_tag', 'action_2'),
+        ('void', 'all')
+    ]
 
 
 def test_resource_without_colon():
@@ -122,7 +132,7 @@ def test_not_isidentifier_resource():
         _normalize_resource('content:11')
 
 
-def test_resource_with_many_fields():
+def test_resource_with_invalid_actions():
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
@@ -171,3 +181,89 @@ def test_multiple_empty_resources():
         ('void', 'all'),
         ('void', 'all'),
     ]
+
+
+def test_multiple_actions_for_one_resource():
+    r = _normalize_resource('resource_tag:{action_1, action_2}')
+    assert r == [('resource_tag', 'action_1'), ('resource_tag', 'action_2')]
+
+    r = _normalize_resource('resource_tag_1:{action_1, action_2}, resource_tag_2: action_3')
+    assert r == [('resource_tag_1', 'action_1'), ('resource_tag_1', 'action_2'), ('resource_tag_2', 'action_3')]
+
+    r = _normalize_resource(
+        'resource_tag_2: action_3, resource_tag_1:{action_1, action_2}'
+    )
+    assert r == [
+        ('resource_tag_2', 'action_3'),
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2')
+    ]
+
+    r = _normalize_resource(
+        'resource_tag_1:{action_1, action_2}, resource_tag_2: action_3, resource_tag_3:{action_4, action_5}'
+    )
+    assert r == [
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2'),
+        ('resource_tag_2', 'action_3'),
+        ('resource_tag_3', 'action_4'),
+        ('resource_tag_3', 'action_5')
+    ]
+
+    r = _normalize_resource('resource_tag_1:{action_1, action_2},,')
+    assert r == [
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2'),
+        ('void', 'all'),
+        ('void', 'all')
+    ]
+
+
+def test_invalid_multiple_actions_for_one_resource():
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag: (action required)'
+        )
+    ):
+        _normalize_resource('resource_tag:{}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: {action_1'
+        )
+    ):
+        _normalize_resource('resource_tag: {{action_1, action_2}}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag: {action_1, resource_tag: action_2} (tag and action required)'
+        )
+    ):
+        _normalize_resource('resource_tag: {action_1, resource_tag: action_2}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: {action_1'
+        )
+    ):
+        _normalize_resource('resource_tag: {action_1')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: {action1, action2} (tag and action required)'
+        )
+    ):
+        _normalize_resource('{action1, action2}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: }action1'
+        )
+    ):
+        _normalize_resource('resource_tag: }action1, action2{')
