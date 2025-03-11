@@ -14,6 +14,9 @@ def test_valid_resource():
     r = _normalize_resource('me:all,anyone:all,content:read')
     assert r == [('me', 'all'), ('anyone', 'all'), ('content', 'read')]
 
+    r = _normalize_resource('content : read')
+    assert r == [('content', 'read')]
+
 
 def test_empty_resource():
     r = _normalize_resource(None)
@@ -267,3 +270,27 @@ def test_invalid_multiple_actions_for_one_resource():
         )
     ):
         _normalize_resource('resource_tag: }action1, action2{')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag: (action required)'
+        )
+    ):
+        _normalize_resource('resource_tag:{}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag_1: (action required)'
+        )
+    ):
+        _normalize_resource('resource_tag_1:{}, reosurse_tag_2: action_2')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: {read'
+        )
+    ):
+        _normalize_resource('content:{read, write:{delete}}')
