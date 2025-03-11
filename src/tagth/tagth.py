@@ -8,8 +8,8 @@ FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
 VOID_RESOURCE = ''
-ACTION_START_BRACE = '{'
-ACTION_END_BRACE = '}'
+ACTION_OPEN_BRACE = '{'
+ACTION_CLOSE_BRACE = '}'
 
 
 class TagthException(Exception):
@@ -33,7 +33,7 @@ def resolve_multiple_actions(item):
 
     for action in action_list:
         action.strip()
-        action = action.replace(ACTION_START_BRACE, '', 1).replace(ACTION_END_BRACE, '', 1)
+        action = action.replace(ACTION_OPEN_BRACE, '', 1).replace(ACTION_CLOSE_BRACE, '', 1)
         result.append(f'{resourse_tag}: {action}')
 
     return result
@@ -100,7 +100,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     result = []
 
     for resource in resource_list:
-        if ACTION_START_BRACE in resource and ACTION_END_BRACE in resource:
+        if ACTION_OPEN_BRACE in resource and ACTION_CLOSE_BRACE in resource:
             result.extend(resolve_multiple_actions(resource))
         else:
             result.append(resource)
