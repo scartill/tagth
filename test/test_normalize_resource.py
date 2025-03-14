@@ -14,9 +14,6 @@ def test_valid_resource():
     r = _normalize_resource('me:all,anyone:all,content:read')
     assert r == [('me', 'all'), ('anyone', 'all'), ('content', 'read')]
 
-    r = _normalize_resource('content : read')
-    assert r == [('content', 'read')]
-
 
 def test_empty_resource():
     r = _normalize_resource(None)
@@ -221,12 +218,27 @@ def test_multiple_actions_for_one_resource():
         ('void', 'all')
     ]
 
+    r = _normalize_resource('resource_tag_1:{action_1, action_2}, ')
+    assert r == [
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2'),
+        ('void', 'all'),
+    ]
+
+    r = _normalize_resource(' , resource_tag_2: action_3, resource_tag_1:{action_1, action_2}')
+    assert r == [
+        ('void', 'all'),
+        ('resource_tag_2', 'action_3'),
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2'),
+    ]
+
 
 def test_invalid_multiple_actions_for_one_resource():
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
-            'Invalid resource tag: resource_tag: (action required)'
+            'Invalid resource tag: resource_tag:  (action required)'
         )
     ):
         _normalize_resource('resource_tag:{}')
@@ -274,15 +286,7 @@ def test_invalid_multiple_actions_for_one_resource():
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
-            'Invalid resource tag: resource_tag: (action required)'
-        )
-    ):
-        _normalize_resource('resource_tag:{}')
-
-    with pytest.raises(
-        TagthValidationError,
-        match=re.escape(
-            'Invalid resource tag: resource_tag_1: (action required)'
+            'Invalid resource tag: resource_tag_1:  (action required)'
         )
     ):
         _normalize_resource('resource_tag_1:{}, reosurse_tag_2: action_2')
@@ -290,7 +294,111 @@ def test_invalid_multiple_actions_for_one_resource():
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
-            'Special characters in resource action: {read'
+            'Special characters in resource action: delete}'
         )
     ):
         _normalize_resource('content:{read, write:{delete}}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: a{1'
+        )
+    ):
+        _normalize_resource('p:a{1,s}2')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: a{1'
+        )
+    ):
+        _normalize_resource('p:a{1,s')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: a,s}'
+        )
+    ):
+        _normalize_resource('p:a,s}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: a{1'
+        )
+    ):
+        _normalize_resource('p:a{1,s}}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: a{{1'
+        )
+    ):
+        _normalize_resource('p:a{{1,s}}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: p:  (action required)'
+        )
+    ):
+        _normalize_resource('p: {}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: a{'
+        )
+    ):
+        _normalize_resource('p:a{}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: p:  (action required)'
+        )
+    ):
+        _normalize_resource('p:{,}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag:  (action required)'
+        )
+    ):
+        _normalize_resource('resource_tag:{ ,action}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag:  (action required)'
+        )
+    ):
+        _normalize_resource('resource_tag:{,,}')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Special characters in resource action: {action_1'
+        )
+    ):
+        _normalize_resource('resource_tag:{action_1')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag{action (tag and action required)'
+        )
+    ):
+        _normalize_resource('resource_tag{action')
+
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: resource_tag{action} (tag and action required)'
+        )
+    ):
+        _normalize_resource('resource_tag{action}')
