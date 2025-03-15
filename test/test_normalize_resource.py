@@ -317,7 +317,6 @@ def test_nested_braces():
     ):
         _normalize_resource('resource_tag: {{action_1, action_2}}')
 
-
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
@@ -368,7 +367,7 @@ def test_invalid_multiple_actions_structure():
         )
     ):
         _normalize_resource('resource_tag: {action_1, resource_tag: action_2}')
-    
+
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
@@ -434,7 +433,7 @@ def test_single_brace():
         )
     ):
         _normalize_resource('p:a,s}')
-    
+
     with pytest.raises(
         TagthValidationError,
         match=re.escape(
@@ -466,6 +465,3 @@ def test_single_brace():
         )
     ):
         _normalize_resource('p1:{a1, {p2:{a3, a4}, s1}}')
-
-
-
