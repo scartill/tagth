@@ -459,5 +459,13 @@ def test_single_brace():
     ):
         _normalize_resource('p:{a1, a2}, s3}')
 
+    with pytest.raises(
+        TagthValidationError,
+        match=re.escape(
+            'Invalid resource tag: p1:{a1, {p2:{a3, a4}, s1}} (tag and action required)'
+        )
+    ):
+        _normalize_resource('p1:{a1, {p2:{a3, a4}, s1}}')
+
 
 
