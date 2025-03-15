@@ -20,7 +20,34 @@ class TagthValidationError(TagthException):
     pass
 
 
-def resolve_multiple_actions(item):
+def split_resource(resource: str) -> list[str]:
+    resource = resource.strip()
+    result = []
+    depth = 0
+    current = []
+
+    for char in resource:
+        if char == ACTIONS_START_BRACE:
+            depth += 1
+        elif char == ACTIONS_END_BRACE:
+            depth -= 1
+
+        if char == TAG_LIST_DELIMETER and depth == 0:
+            result.append(''.join(current).strip())
+            current = []
+        else:
+            current.append(char)
+
+    if current:
+        result.append(''.join(current).strip())
+
+    if not resource or resource[-1] == TAG_LIST_DELIMETER:
+        result.append('')
+
+    return result
+
+
+def resolve_multiple_actions(item: str) -> list[str]:
     item_list = item.split(ACTION_DELIMETER)
 
     if len(item_list) != 2:
@@ -107,7 +134,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     if not isinstance(resource, str):
         raise TagthValidationError(f'Bad resource {resource}')
 
-    resource_list = re.split(r',\s*(?![^{}]*\})', resource)
+    resource_list = split_resource(resource)
     result = []
 
     for resource in resource_list:
