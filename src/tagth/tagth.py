@@ -1,6 +1,3 @@
-import re
-
-
 TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
 ANYONE_PRINCIPAL = 'anyone'
@@ -20,7 +17,7 @@ class TagthValidationError(TagthException):
     pass
 
 
-def split_resource(resource: str) -> list[str]:
+def _split_resource(resource: str) -> list[str]:
     resource = resource.strip()
     result = []
     depth = 0
@@ -47,7 +44,7 @@ def split_resource(resource: str) -> list[str]:
     return result
 
 
-def resolve_multiple_actions(item: str) -> list[str]:
+def _resolve_multiple_actions(item: str) -> list[str]:
     item_list = item.split(ACTION_DELIMETER)
 
     if len(item_list) != 2:
@@ -92,8 +89,8 @@ def _normalize_principal(principal: str) -> list[str]:
     if not isinstance(principal, str):
         raise TagthValidationError(f'Bad principal {principal}')
 
-    principal = principal.split(TAG_LIST_DELIMETER)
-    return list(map(norm_item, principal))
+    principal_list = principal.split(TAG_LIST_DELIMETER)
+    return list(map(norm_item, principal_list))
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
@@ -134,12 +131,12 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     if not isinstance(resource, str):
         raise TagthValidationError(f'Bad resource {resource}')
 
-    resource_list = split_resource(resource)
+    resource_list = _split_resource(resource)
     result = []
 
     for resource in resource_list:
         if ACTIONS_START_BRACE in resource and ACTIONS_END_BRACE in resource:
-            result.extend(resolve_multiple_actions(resource))
+            result.extend(_resolve_multiple_actions(resource))
         else:
             result.append(resource)
 
@@ -172,9 +169,9 @@ def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> 
 
 
 def _resolve(principal: str, resource: str) -> set[str]:
-    principal = _normalize_principal(principal)
-    resource = _normalize_resource(resource)
-    return _resolve_internal(principal, resource)
+    principal_list = _normalize_principal(principal)
+    resource_list = _normalize_resource(resource)
+    return _resolve_internal(principal_list, resource_list)
 
 
 def allowed(principal: str, resource: str, action: str) -> bool:
