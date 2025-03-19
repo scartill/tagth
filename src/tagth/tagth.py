@@ -12,8 +12,8 @@ FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
 VOID_RESOURCE = ''
-ACTIONS_START_BRACE = '{'
-ACTIONS_END_BRACE = '}'
+BRACE_OPEN = '{'
+BRACE_CLOSE = '}'
 
 
 class TagthException(Exception):
@@ -49,17 +49,17 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     if not isinstance(resource, str):
         raise TagthValidationError(f'Bad resource {resource}')
 
-    separator = Literal(',')
+    separator = Literal(TAG_LIST_DELIMETER)
     resource_tag = (Word(alphas + '_', alphanums + '_'))('resource_tag')
     action = (Word(alphas + '_', alphanums + '_'))('action')
-    actions = OneOrMore((action + Suppress((',')) + action))('actions')
+    actions = OneOrMore((action + Suppress((TAG_LIST_DELIMETER)) + action))('actions')
 
-    single_action_module = (resource_tag + Suppress(':') + action).setParseAction(
+    single_action_module = (resource_tag + Suppress(ACTION_DELIMETER) + action).setParseAction(
         lambda t: (t.resource_tag, t.action)
     )
 
     multiple_actions_module = (
-        resource_tag + Suppress(':') + Suppress('{') + actions + Suppress('}')
+        resource_tag + Suppress(ACTION_DELIMETER) + Suppress(BRACE_OPEN) + actions + Suppress(BRACE_CLOSE)
     ).setParseAction(
         lambda t: [(t.resource_tag, act) for act in t.actions]
     )
@@ -74,7 +74,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         result = parser.parseString(resource)
         return result.asList()
     except ParseException as e:
-        raise TagthValidationError(f"Invalid resource: {e}")
+        raise TagthValidationError(f"Invalid resource: {e}") from e
 
 
 def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:
