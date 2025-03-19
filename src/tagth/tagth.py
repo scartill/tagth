@@ -1,8 +1,8 @@
 from pyparsing import (
-    Literal, Word, alphas,
-    alphanums, OneOrMore, Suppress,
-    ZeroOrMore, ParseException,
-    StringEnd, Empty)
+    alphas, alphanums, Empty,
+    Literal, OneOrMore, ParseException,
+    StringEnd, Suppress, Word,
+    ZeroOrMore,)
 
 
 TAG_LIST_DELIMETER = ','
