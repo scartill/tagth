@@ -28,9 +28,9 @@ def _normalize_principal(principal: str) -> list[str]:
     if not isinstance(principal, str):
         raise TagthValidationError(f'Bad principal {principal}')
 
-    separator = Literal(',')
+    separator = Literal(TAG_LIST_DELIMETER)
     principal_tag = (Word(identchars, identbodychars))('principal_tag')
-    empty_principal = (Empty()).setParseAction(lambda _: ['void'])
+    empty_principal = (Empty()).setParseAction(lambda _: [VOID_PRINCIPAL])
     principal_module = principal_tag | empty_principal
 
     parser = ZeroOrMore(principal_module + Suppress(separator)) + principal_module + StringEnd()
@@ -63,7 +63,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         lambda t: [(t.resource_tag, act) for act in t.actions]
     )
 
-    empty_module = (Empty()).setParseAction(lambda _: [('void', 'all')])
+    empty_module = (Empty()).setParseAction(lambda _: [(VOID_PRINCIPAL, FULL_ACCESS_ACTION)])
 
     resource_module = single_action_module | multiple_actions_module | empty_module
 
