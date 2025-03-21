@@ -1,5 +1,5 @@
 from pyparsing import (
-    alphas, alphanums, Empty, identchars, identbodychars,
+    Empty, identchars, identbodychars,
     Literal, OneOrMore, ParseException,
     StringEnd, Suppress, Word,
     ZeroOrMore,)
