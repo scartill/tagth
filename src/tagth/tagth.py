@@ -25,22 +25,21 @@ class TagthValidationError(TagthException):
 
 
 def _normalize_principal(principal: str) -> list[str]:
-    def norm_item(item: str) -> str:
-        tag = item.strip()
-
-        if not tag:
-            tag = VOID_PRINCIPAL
-
-        if not tag.isidentifier():
-            raise TagthValidationError(f'Special characters in principal tag: {tag}')
-
-        return tag
-
     if not isinstance(principal, str):
         raise TagthValidationError(f'Bad principal {principal}')
 
-    principal_list = principal.split(TAG_LIST_DELIMETER)
-    return list(map(norm_item, principal_list))
+    separator = Literal(',')
+    principal_tag = (Word(alphas + '_', alphanums + '_'))('principal_tag')
+    empty_principal = (Empty()).setParseAction(lambda _: ['void'])
+    principal_module = principal_tag | empty_principal
+
+    parser = ZeroOrMore(principal_module + Suppress(separator)) + principal_module + StringEnd()
+
+    try:
+        result = parser.parseString(principal)
+        return result.asList()
+    except ParseException as e:
+        raise TagthValidationError(f"Invalid resource: {e}") from e
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
