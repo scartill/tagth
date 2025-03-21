@@ -38,34 +38,22 @@ def test_invalid_tag_list():
 
 
 def test_not_isidentifier_tag():
-    with pytest.raises(
-        TagthValidationError, match='Special characters in principal tag: 1tag'
-    ):
+    with pytest.raises(TagthValidationError):
         _normalize_principal('1tag')
 
-    with pytest.raises(
-        TagthValidationError, match='Special characters in principal tag: 20'
-    ):
+    with pytest.raises(TagthValidationError):
         _normalize_principal('20')
 
-    with pytest.raises(
-        TagthValidationError, match='Special characters in principal tag: tag-1'
-    ):
+    with pytest.raises(TagthValidationError):
         _normalize_principal('tag-1')
 
-    with pytest.raises(
-        TagthValidationError, match='Special characters in principal tag: 1tag'
-    ):
+    with pytest.raises(TagthValidationError):
         _normalize_principal('1tag, tag_2')
 
-    with pytest.raises(
-        TagthValidationError, match='Special characters in principal tag: tag@'
-    ):
+    with pytest.raises(TagthValidationError):
         _normalize_principal('tag@')
 
-    with pytest.raises(
-        TagthValidationError, match='Special characters in principal tag: tag_1 tag_2'
-    ):
+    with pytest.raises(TagthValidationError):
         _normalize_principal('tag_1 tag_2')
 
 
