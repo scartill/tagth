@@ -1,5 +1,5 @@
 from pyparsing import (
-    alphas, alphanums, Empty,
+    alphas, alphanums, Empty, identchars, identbodychars,
     Literal, OneOrMore, ParseException,
     StringEnd, Suppress, Word,
     ZeroOrMore,)
@@ -29,7 +29,7 @@ def _normalize_principal(principal: str) -> list[str]:
         raise TagthValidationError(f'Bad principal {principal}')
 
     separator = Literal(',')
-    principal_tag = (Word(alphas + '_', alphanums + '_'))('principal_tag')
+    principal_tag = (Word(identchars, identbodychars))('principal_tag')
     empty_principal = (Empty()).setParseAction(lambda _: ['void'])
     principal_module = principal_tag | empty_principal
 
@@ -49,8 +49,8 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         raise TagthValidationError(f'Bad resource {resource}')
 
     separator = Literal(TAG_LIST_DELIMETER)
-    resource_tag = (Word(alphas + '_', alphanums + '_'))('resource_tag')
-    action = (Word(alphas + '_', alphanums + '_'))('action')
+    resource_tag = (Word(identchars, identbodychars))('resource_tag')
+    action = (Word(identchars, identbodychars))('action')
     actions = OneOrMore((action + Suppress((TAG_LIST_DELIMETER)) + action))('actions')
 
     single_action_module = (resource_tag + Suppress(ACTION_DELIMETER) + action).setParseAction(
