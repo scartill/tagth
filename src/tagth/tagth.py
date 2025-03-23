@@ -108,6 +108,16 @@ def _resolve(principal: str, resource: str) -> set[str]:
 
 
 def allowed(principal: str, resource: str, action: str) -> bool:
+    """Checks if a given principal is allowed to perform an action on a resource.
+
+    Args:
+        principal (str): A string representing the principal tags.
+        resource (str): A string representing the pairs of tags and actions.
+        action (str): The action to check for permission.
+
+    Returns:
+        bool: True if the action is allowed, False otherwise.
+    """
     actions = _resolve(principal, resource)
 
     if FULL_ACCESS_ACTION in actions:
@@ -121,6 +131,14 @@ def allowed(principal: str, resource: str, action: str) -> bool:
 
 
 def validate_principal(principal: str) -> bool:
+    """Validates the principal string.
+
+    Args:
+        principal (str): A string representing the principal tags.
+
+    Returns:
+        bool: True if the principal is valid, False otherwise.
+    """
     try:
         _normalize_principal(principal)
     except TagthValidationError:
@@ -130,6 +148,14 @@ def validate_principal(principal: str) -> bool:
 
 
 def validate_resource(resource: str) -> bool:
+    """Validates the resource string.
+
+    Args:
+        resource (str): A string representing the resource-action pairs.
+
+    Returns:
+        bool: True if the resource is valid, False otherwise.
+    """
     try:
         _normalize_resource(resource)
     except TagthValidationError:
