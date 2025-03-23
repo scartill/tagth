@@ -21,6 +21,21 @@ def test_regular_user_with_basic_permission(p, r, action, expected):
 @pytest.mark.parametrize(
     'p, r, action, expected',
     [
+        ('user', 'user:{read, write}', 'read', True),
+        ('user', 'user:{read, write}, admin:edit', 'read', True),
+        ('user', 'user:{read, write}, admin:edit', 'edit', False),
+        ('user', 'user:{read, write}', 'delete', False),
+        ('user, content', 'user:{read, write}, content:view', 'view', True),
+        ('user, content', 'user:{read, write}, content:view', 'delete', False),
+    ]
+)
+def test_multiple_actions(p, r, action, expected):
+    assert allowed(p, r, action) == expected
+
+
+@pytest.mark.parametrize(
+    'p, r, action, expected',
+    [
         ('admin', 'admin:create', 'create', True),
         ('admin', 'admin:create', 'create_assest', True),
         ('admin', 'admin:create', 'write_message', False),
