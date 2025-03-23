@@ -5,7 +5,9 @@ description = "Pure Python Stateless Tag-Based Authorization Library"
 authors = [
     { name = "Boris Resnick", email = "boris.resnick@gmail.com" }
 ]
-dependencies = []
+dependencies = [
+    "pyparsing>=3.1.4",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 license = { file = "LICENSE" }

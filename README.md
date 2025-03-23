@@ -38,7 +38,7 @@ A resource tag is a string that is a valid Python identifier. *NB: there is no s
 
 An action is a string that is a valid Python identifier. A superaction is an action that is a prefix of another action. For example, `create` is a superaction of `create_asset`.
 
-Resource auth tag string looks like a comma-separated of colon-separarted pairs of tags and actions: `tag_one:read, tag_two:write` (tags with associated actions).
+Resource auth tag string looks like a comma-separated of colon-separarted pairs of tags and actions: `tag_one:read, tag_two:write` or multiple actions:  `tag_one:{read, write}`(tags with associated actions).
 
 An action is allowed for a principal if it possesses:
 * a tag that is associated with the action
@@ -71,6 +71,17 @@ resource_tags = 'content:read, metadata:write'
 
 # Check if user can read content
 allowed(principal_tags, resource_tags, 'read')  # Returns True
+# Check if user can delete content
+allowed(principal_tags, resource_tags, 'delete')  # Returns False
+
+# Multiple actions for a resource
+principal_tags = 'user, content'
+resource_tags = 'content:{read, write}'
+
+# Check if user can read content
+allowed(principal_tags, resource_tags, 'read')  # Returns True
+# Check if user can write content
+allowed(principal_tags, resource_tags, 'write')  # Returns True
 # Check if user can delete content
 allowed(principal_tags, resource_tags, 'delete')  # Returns False
 

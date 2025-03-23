@@ -174,3 +174,23 @@ def test_principal_tags_and_supertags():
     a = _resolve(p, r)
     assert a == {'write', 'delete'}
 
+
+def test_multiple_actions():
+    p = 'user'
+
+    r = 'user:{read, write}'
+    a = _resolve(p, r)
+    assert a == {'read', 'write'}
+
+    r = 'admin:{read, write}'
+    a = _resolve(p, r)
+    assert a == set()
+
+    r = 'user:{read, edit}, admin:write'
+    a = _resolve(p, r)
+    assert a == {'read', 'edit'}
+
+    p = 'user, admin'
+    r = 'user:{read, edit}, admin:write'
+    a = _resolve(p, r)
+    assert a == {'read', 'edit', 'write'}
