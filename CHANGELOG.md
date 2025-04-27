@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Minor bugfix: error reporting
+
 ## 1.2.0
 
 ### Features
