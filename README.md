@@ -4,6 +4,12 @@
 
 Traditional role-based authorization models are not flexible enough to cover all required use cases. On the other side, full-managed ACLs are too complex for account managers to handle. `tagth` is a simple and flexible authorization model that can be easily implemented and maintained.
 
+## Installation
+
+```sh
+pip install tagth
+```
+
 ## Tag-Based Authorization
 
 A lightweight model that is based on three concepts:
