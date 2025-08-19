@@ -1,9 +1,15 @@
 from pyparsing import (
-    Empty, identchars, identbodychars,
-    Literal, OneOrMore, ParseException,
-    StringEnd, Suppress, Word,
-    ZeroOrMore,)
-
+    Empty,
+    Literal,
+    ParseException,
+    StringEnd,
+    Suppress,
+    Word,
+    ZeroOrMore,
+    delimitedList,
+    identbodychars,
+    identchars,
+)
 
 TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
@@ -51,7 +57,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     separator = Literal(TAG_LIST_DELIMETER)
     resource_tag = (Word(identchars, identbodychars))('resource_tag')
     action = (Word(identchars, identbodychars))('action')
-    actions = OneOrMore((action + Suppress((TAG_LIST_DELIMETER)) + action))('actions')
+    actions = delimitedList(action, delim=TAG_LIST_DELIMETER)('actions')
 
     single_action_module = (resource_tag + Suppress(ACTION_DELIMETER) + action).setParseAction(
         lambda t: (t.resource_tag, t.action)
