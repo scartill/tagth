@@ -1,9 +1,15 @@
 from pyparsing import (
-    Empty, identchars, identbodychars,
-    Literal, OneOrMore, ParseException, delimitedList,
-    StringEnd, Suppress, Word,
-    ZeroOrMore,)
-
+    Empty,
+    Literal,
+    ParseException,
+    StringEnd,
+    Suppress,
+    Word,
+    ZeroOrMore,
+    delimitedList,
+    identbodychars,
+    identchars,
+)
 
 TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'

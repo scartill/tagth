@@ -1,7 +1,8 @@
-import pytest
 import re
 
-from tagth.tagth import _normalize_resource, TagthValidationError, validate_resource
+import pytest
+
+from tagth.tagth import TagthValidationError, _normalize_resource, validate_resource
 
 
 def test_valid_resource():
