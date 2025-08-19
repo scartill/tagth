@@ -63,6 +63,14 @@ def test_resource_with_whitespace():
         ('void', 'all')
     ]
 
+    r = _normalize_resource('resource_tag:{action_1, action_2, action_3}, ')
+    assert r == [
+        ('resource_tag', 'action_1'),
+        ('resource_tag', 'action_2'),
+        ('resource_tag', 'action_3'),
+        ('void', 'all')
+    ]
+
 
 def test_resource_without_colon():
     with pytest.raises(TagthValidationError):
@@ -153,6 +161,18 @@ def test_multiple_actions_for_one_resource():
         ('resource_tag_3', 'action_5')
     ]
 
+    r = _normalize_resource(
+        'resource_tag_1:{action_1, action_2}, resource_tag_2: action_3, resource_tag_3:{action_4, action_5, action_6}'
+    )
+    assert r == [
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2'),
+        ('resource_tag_2', 'action_3'),
+        ('resource_tag_3', 'action_4'),
+        ('resource_tag_3', 'action_5'),
+        ('resource_tag_3', 'action_6')
+    ]
+
     r = _normalize_resource('resource_tag_1:{action_1, action_2},,')
     assert r == [
         ('resource_tag_1', 'action_1'),
@@ -174,6 +194,16 @@ def test_multiple_actions_for_one_resource():
         ('resource_tag_2', 'action_3'),
         ('resource_tag_1', 'action_1'),
         ('resource_tag_1', 'action_2'),
+    ]
+
+    r = _normalize_resource(' , resource_tag_1: action_1,,resource_tag_2:{action_2, action_3,action_4}')
+    assert r == [
+        ('void', 'all'),
+        ('resource_tag_1', 'action_1'),
+        ('void', 'all'),
+        ('resource_tag_2', 'action_2'),
+        ('resource_tag_2', 'action_3'),
+        ('resource_tag_2', 'action_4'),
     ]
 
     r = _normalize_resource('resource_tag:{action_1, action_2, action_3}')
