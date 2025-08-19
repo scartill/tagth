@@ -1,8 +1,7 @@
+import pytest
 import re
 
-import pytest
-
-from tagth.tagth import TagthValidationError, _normalize_principal
+from tagth.tagth import _normalize_principal, TagthValidationError
 
 
 def test_valid_tags():

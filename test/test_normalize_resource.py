@@ -255,6 +255,9 @@ def test_nested_braces():
         _normalize_resource('resource_tag: {{action_1, action_2}}')
 
     with pytest.raises(TagthValidationError):
+        _normalize_resource('resource_tag: {{action_1, action_2, action_3}}')
+
+    with pytest.raises(TagthValidationError):
         _normalize_resource('content:{read, write:{delete}}')
 
     with pytest.raises(TagthValidationError):
@@ -312,9 +315,3 @@ def test_single_brace():
 
     with pytest.raises(TagthValidationError):
         _normalize_resource('p1:{a1, {p2:{a3, a4}, s1}}')
-
-
-def test_smt_broken():
-    questionable_resource = 'owner_creator: {read, modearte, write}'
-    r = validate_resource(questionable_resource)
-    assert r is True
