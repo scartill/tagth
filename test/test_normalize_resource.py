@@ -1,7 +1,7 @@
 import pytest
 import re
 
-from tagth.tagth import _normalize_resource, TagthValidationError
+from tagth.tagth import _normalize_resource, TagthValidationError, validate_resource
 
 
 def test_valid_resource():
@@ -175,6 +175,20 @@ def test_multiple_actions_for_one_resource():
         ('resource_tag_1', 'action_2'),
     ]
 
+    r = _normalize_resource('resource_tag:{action_1, action_2, action_3}')
+    assert r == [('resource_tag', 'action_1'), ('resource_tag', 'action_2'), ('resource_tag', 'action_3')]
+
+    r = _normalize_resource('resource_tag_1:{action_1, action_2, action_3}, resource_tag_2:{action_4, action_5, action_6, action_7}')
+    assert r == [
+        ('resource_tag_1', 'action_1'),
+        ('resource_tag_1', 'action_2'),
+        ('resource_tag_1', 'action_3'),
+        ('resource_tag_2', 'action_4'),
+        ('resource_tag_2', 'action_5'),
+        ('resource_tag_2', 'action_6'),
+        ('resource_tag_2', 'action_7')
+    ]
+
 
 def test_invalid_multiple_actions_and_empty_tag():
     with pytest.raises(TagthValidationError):
@@ -267,3 +281,9 @@ def test_single_brace():
 
     with pytest.raises(TagthValidationError):
         _normalize_resource('p1:{a1, {p2:{a3, a4}, s1}}')
+
+
+def test_smt_broken():
+    questionable_resource = 'owner_creator: {read, modearte, write}'
+    r = validate_resource(questionable_resource)
+    assert r is True
