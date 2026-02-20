@@ -46,6 +46,8 @@ An action is a string that is a valid Python identifier. A superaction is an act
 
 Resource auth tag string looks like a comma-separated of colon-separarted pairs of tags and actions: `tag_one:read, tag_two:write` or multiple actions:  `tag_one:{read, write}`(tags with associated actions).
 
+If the resource auth tag string is empty or contains only whitespace, only the `root` principal is allowed access.
+
 An action is allowed for a principal if it possesses:
 * a tag that is associated with the action
 * a tag that is associated with the superaction of the action

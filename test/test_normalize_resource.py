@@ -24,7 +24,7 @@ def test_empty_resource():
     assert r == []
 
     r = _normalize_resource(' ')
-    assert r == [('void', 'all')]
+    assert r == [('@empty', 'all')]
 
 
 def test_invalid_type_resource():
@@ -44,14 +44,14 @@ def test_invalid_resource_with_no_comma():
 
 def test_resource_with_whitespace():
     r = _normalize_resource(' ,content:read')
-    assert r == [('void', 'all'), ('content', 'read')]
+    assert r == [('@empty', 'all'), ('content', 'read')]
 
     r = _normalize_resource('content:read, ')
-    assert r == [('content', 'read'), ('void', 'all')]
+    assert r == [('content', 'read'), ('@empty', 'all')]
 
     r = _normalize_resource(' ,resource_tag:{action_1, action_2}')
     assert r == [
-        ('void', 'all'),
+        ('@empty', 'all'),
         ('resource_tag', 'action_1'),
         ('resource_tag', 'action_2')
     ]
@@ -60,7 +60,7 @@ def test_resource_with_whitespace():
     assert r == [
         ('resource_tag', 'action_1'),
         ('resource_tag', 'action_2'),
-        ('void', 'all')
+        ('@empty', 'all')
     ]
 
     r = _normalize_resource('resource_tag:{action_1, action_2, action_3}, ')
@@ -68,7 +68,7 @@ def test_resource_with_whitespace():
         ('resource_tag', 'action_1'),
         ('resource_tag', 'action_2'),
         ('resource_tag', 'action_3'),
-        ('void', 'all')
+        ('@empty', 'all')
     ]
 
 
@@ -122,15 +122,15 @@ def test_resource_special_values():
 def test_multiple_empty_resources():
     r = _normalize_resource(',')
     assert r == [
-        ('void', 'all'),
-        ('void', 'all'),
+        ('@empty', 'all'),
+        ('@empty', 'all'),
     ]
 
     r = _normalize_resource(', ,')
     assert r == [
-        ('void', 'all'),
-        ('void', 'all'),
-        ('void', 'all'),
+        ('@empty', 'all'),
+        ('@empty', 'all'),
+        ('@empty', 'all'),
     ]
 
 
@@ -177,20 +177,20 @@ def test_multiple_actions_for_one_resource():
     assert r == [
         ('resource_tag_1', 'action_1'),
         ('resource_tag_1', 'action_2'),
-        ('void', 'all'),
-        ('void', 'all')
+        ('@empty', 'all'),
+        ('@empty', 'all')
     ]
 
     r = _normalize_resource('resource_tag_1:{action_1, action_2}, ')
     assert r == [
         ('resource_tag_1', 'action_1'),
         ('resource_tag_1', 'action_2'),
-        ('void', 'all'),
+        ('@empty', 'all'),
     ]
 
     r = _normalize_resource(' , resource_tag_2: action_3, resource_tag_1:{action_1, action_2}')
     assert r == [
-        ('void', 'all'),
+        ('@empty', 'all'),
         ('resource_tag_2', 'action_3'),
         ('resource_tag_1', 'action_1'),
         ('resource_tag_1', 'action_2'),
@@ -198,9 +198,9 @@ def test_multiple_actions_for_one_resource():
 
     r = _normalize_resource(' , resource_tag_1: action_1,,resource_tag_2:{action_2, action_3,action_4}')
     assert r == [
-        ('void', 'all'),
+        ('@empty', 'all'),
         ('resource_tag_1', 'action_1'),
-        ('void', 'all'),
+        ('@empty', 'all'),
         ('resource_tag_2', 'action_2'),
         ('resource_tag_2', 'action_3'),
         ('resource_tag_2', 'action_4'),
