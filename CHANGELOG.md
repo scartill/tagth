@@ -1,3 +1,9 @@
+# 1.2.3
+
+## Security
+
+- Fix vulnerability where 'v' principal could access empty resources.
+
 # 1.2.2
 
 ## Bugfixes
