@@ -17,6 +17,7 @@ ANYONE_PRINCIPAL = 'anyone'
 FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
+EMPTY_RESOURCE_TAG = '@empty'
 VOID_RESOURCE = ''
 BRACE_OPEN = '{'
 BRACE_CLOSE = '}'
@@ -69,7 +70,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         lambda t: [(t.resource_tag, act) for act in t.actions]
     )
 
-    empty_module = (Empty()).setParseAction(lambda _: [(VOID_PRINCIPAL, FULL_ACCESS_ACTION)])
+    empty_module = (Empty()).setParseAction(lambda _: [(EMPTY_RESOURCE_TAG, FULL_ACCESS_ACTION)])
 
     resource_module = single_action_module | multiple_actions_module | empty_module
 
