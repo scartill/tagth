@@ -104,7 +104,7 @@ def test_void():
     assert a
 
     a = allowed('void', 'void:all', 'action')
-    assert not a
+    assert a
 
 
 def test_empty_anyone():

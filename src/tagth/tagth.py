@@ -17,6 +17,7 @@ ANYONE_PRINCIPAL = 'anyone'
 FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
 VOID_PRINCIPAL = 'void'
+INTERNAL_VOID_PRINCIPAL = '@void'
 EMPTY_RESOURCE_TAG = '@empty'
 VOID_RESOURCE = ''
 BRACE_OPEN = '{'
@@ -37,13 +38,13 @@ def _normalize_principal(principal: str) -> list[str]:
 
     separator = Literal(TAG_LIST_DELIMETER)
     principal_tag = (Word(identchars, identbodychars))('principal_tag')
-    empty_principal = (Empty()).setParseAction(lambda _: [VOID_PRINCIPAL])
+    empty_principal = (Empty()).set_parse_action(lambda _: [INTERNAL_VOID_PRINCIPAL])
     principal_module = principal_tag | empty_principal
 
     parser = ZeroOrMore(principal_module + Suppress(separator)) + principal_module + StringEnd()
 
     try:
-        result = parser.parseString(principal)
+        result = parser.parse_string(principal)
         return result.asList()
     except ParseException as e:
         raise TagthValidationError(f"Invalid principal: {principal}") from e
@@ -60,24 +61,24 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     action = (Word(identchars, identbodychars))('action')
     actions = delimitedList(action, delim=TAG_LIST_DELIMETER)('actions')
 
-    single_action_module = (resource_tag + Suppress(ACTION_DELIMETER) + action).setParseAction(
+    single_action_module = (resource_tag + Suppress(ACTION_DELIMETER) + action).set_parse_action(
         lambda t: (t.resource_tag, t.action)
     )
 
     multiple_actions_module = (
         resource_tag + Suppress(ACTION_DELIMETER) + Suppress(BRACE_OPEN) + actions + Suppress(BRACE_CLOSE)
-    ).setParseAction(
+    ).set_parse_action(
         lambda t: [(t.resource_tag, act) for act in t.actions]
     )
 
-    empty_module = (Empty()).setParseAction(lambda _: [(EMPTY_RESOURCE_TAG, FULL_ACCESS_ACTION)])
+    empty_module = (Empty()).set_parse_action(lambda _: [(EMPTY_RESOURCE_TAG, FULL_ACCESS_ACTION)])
 
     resource_module = single_action_module | multiple_actions_module | empty_module
 
     parser = ZeroOrMore(resource_module + Suppress(separator)) + resource_module + StringEnd()
 
     try:
-        result = parser.parseString(resource)
+        result = parser.parse_string(resource)
         return result.asList()
     except ParseException as e:
         raise TagthValidationError(f"Invalid resource: {resource}") from e
@@ -98,7 +99,7 @@ def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> 
             actions.add(action)
 
     for pr_tag in principal:
-        if pr_tag == VOID_PRINCIPAL:
+        if pr_tag == INTERNAL_VOID_PRINCIPAL:
             continue
 
         for (res_tag, action) in resource:

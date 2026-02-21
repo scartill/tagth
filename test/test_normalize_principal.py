@@ -17,12 +17,12 @@ def test_valid_tags():
 
 def test_empty_tag():
     p = _normalize_principal('')
-    assert p == ['void']
+    assert p == ['@void']
 
 
 def test_whitespace_tag():
     p = _normalize_principal(' ')
-    assert p == ['void']
+    assert p == ['@void']
 
 
 def test_invalid_tag_int():
@@ -59,18 +59,18 @@ def test_not_isidentifier_tag():
 
 def test_with_whitespaces():
     p = _normalize_principal('tag_1, tag_2, ')
-    assert p == ['tag_1', 'tag_2', 'void']
+    assert p == ['tag_1', 'tag_2', '@void']
 
     p = _normalize_principal(' ,tag_1')
-    assert p == ['void', 'tag_1']
+    assert p == ['@void', 'tag_1']
 
     p = _normalize_principal(' , ')
-    assert p == ['void', 'void']
+    assert p == ['@void', '@void']
 
     p = _normalize_principal(',')
-    assert p == ['void', 'void']
+    assert p == ['@void', '@void']
 
 
 def test_with_multiple_commas():
     p = _normalize_principal('tag_1,,,tag_2')
-    assert p == ['tag_1', 'void', 'void', 'tag_2']
+    assert p == ['tag_1', '@void', '@void', 'tag_2']
