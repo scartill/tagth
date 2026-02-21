@@ -83,12 +83,12 @@ def test_with_matching_tags():
     p = 'me'
     r = 'meme_me:all'
     a = _resolve(p, r)
-    assert a == {'all'}
+    assert a == set()
 
     p = 'me'
     r = 'xmememe:ro, meme:rw'
     a = _resolve(p, r)
-    assert a == {'rw'}
+    assert a == set()
 
     p = 'admin, user'
     r = 'admin:write, user:read'

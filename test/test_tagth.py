@@ -25,16 +25,16 @@ def test_resolve():
     assert r == {'all'}
 
     r = _resolve('me', 'meme_me:all')
-    assert r == {'all'}
+    assert r == set()
 
     r = _resolve('mememe', 'me:all')
     assert r == set()
 
     r = _resolve('me', 'mememe:ro, meme:rw')
-    assert r == {'ro', 'rw'}
+    assert r == set()
 
     r = _resolve('me', 'xmememe:ro, meme:rw')
-    assert r == {'rw'}
+    assert r == set()
 
 
 def test_allowed():
@@ -51,7 +51,7 @@ def test_allowed():
     assert a
 
     a = allowed('me', 'they:ro, meme:rw', 'rw')
-    assert a
+    assert not a
 
     a = allowed('me', 'ther:ro, meme:rw', 'ro')
     assert not a
@@ -84,10 +84,10 @@ def test_empty_principal():
     assert not a
 
     a = allowed(',res', 'resource:all', 'action')
-    assert a
+    assert not a
 
     a = allowed(',res', 'other:all,resource:all', 'action')
-    assert a
+    assert not a
 
     a = allowed('other,another', 'other:all,resource:all', 'action')
     assert a

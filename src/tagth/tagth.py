@@ -83,6 +83,14 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         raise TagthValidationError(f"Invalid resource: {resource}") from e
 
 
+def _is_supertag(tag: str, supertag: str) -> bool:
+    """Checks if a tag is a supertag of another tag.
+
+    A supertag is a prefix of another tag, followed by an underscore or exact match.
+    """
+    return tag == supertag or tag.startswith(supertag + '_')
+
+
 def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:
     actions = set()
 
@@ -102,7 +110,7 @@ def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> 
             continue
 
         for (res_tag, action) in resource:
-            if res_tag.startswith(pr_tag):
+            if _is_supertag(res_tag, pr_tag):
                 actions.add(action)
 
     return actions
@@ -131,7 +139,7 @@ def allowed(principal: str, resource: str, action: str) -> bool:
         return True
 
     for allowed_action in actions:
-        if action.startswith(allowed_action):
+        if _is_supertag(action, allowed_action):
             return True
 
     return False
