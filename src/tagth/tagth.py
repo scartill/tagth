@@ -102,7 +102,7 @@ def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> 
             continue
 
         for (res_tag, action) in resource:
-            if res_tag == pr_tag or res_tag.startswith(pr_tag + '_'):
+            if res_tag.startswith(pr_tag):
                 actions.add(action)
 
     return actions
@@ -131,7 +131,7 @@ def allowed(principal: str, resource: str, action: str) -> bool:
         return True
 
     for allowed_action in actions:
-        if action == allowed_action or action.startswith(allowed_action + '_'):
+        if action.startswith(allowed_action):
             return True
 
     return False

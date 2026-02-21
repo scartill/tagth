@@ -24,16 +24,16 @@ def test_resolve():
     r = _resolve('me', 'me:all')
     assert r == {'all'}
 
-    r = _resolve('me', 'me_me:all')
+    r = _resolve('me', 'meme_me:all')
     assert r == {'all'}
 
     r = _resolve('mememe', 'me:all')
     assert r == set()
 
-    r = _resolve('me', 'me_meme:ro, me_me:rw')
+    r = _resolve('me', 'mememe:ro, meme:rw')
     assert r == {'ro', 'rw'}
 
-    r = _resolve('me', 'xmememe:ro, me_me:rw')
+    r = _resolve('me', 'xmememe:ro, meme:rw')
     assert r == {'rw'}
 
 
@@ -50,10 +50,10 @@ def test_allowed():
     a = allowed('me', 'anyone:ro', 'ro')
     assert a
 
-    a = allowed('me', 'they:ro, me_me:rw', 'rw')
+    a = allowed('me', 'they:ro, meme:rw', 'rw')
     assert a
 
-    a = allowed('me', 'ther:ro, me_me:rw', 'ro')
+    a = allowed('me', 'ther:ro, meme:rw', 'ro')
     assert not a
 
 
@@ -83,10 +83,10 @@ def test_empty_principal():
     a = allowed(',', 'resource:all', 'action')
     assert not a
 
-    a = allowed(',resource', 'resource:all', 'action')
+    a = allowed(',res', 'resource:all', 'action')
     assert a
 
-    a = allowed(',resource', 'other:all,resource:all', 'action')
+    a = allowed(',res', 'other:all,resource:all', 'action')
     assert a
 
     a = allowed('other,another', 'other:all,resource:all', 'action')
