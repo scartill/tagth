@@ -81,12 +81,12 @@ def test_with_matching_tags():
     assert a == {'all'}
 
     p = 'me'
-    r = 'meme_me:all'
+    r = 'me_me:all'
     a = _resolve(p, r)
     assert a == {'all'}
 
     p = 'me'
-    r = 'xmememe:ro, meme:rw'
+    r = 'xmememe:ro, me_me:rw'
     a = _resolve(p, r)
     assert a == {'rw'}
 
