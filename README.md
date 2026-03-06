@@ -30,6 +30,8 @@ Principal’s auth tag string looks like a comma-separated list of tags: `tag_on
 
 A supertag is a tag that is a prefix of another tag. For example, `admin` is a supertag of `admin_user`.
 
+> **Warning:** Matching is based on simple string prefix. This means `admin` will match `admin_user`, `administrator`, and `admin123`. Ensure your tag naming scheme accounts for this to avoid unintended access.
+
 A principal is said to possess a tag if the tag or its supertag exists in the principal’s auth tag string.
 
 Special values:
@@ -43,6 +45,8 @@ A Resource is an object that can be accessed by a Principal. A Resource can be a
 A resource tag is a string that is a valid Python identifier. *NB: there is no such thing as a supertag for a resource tag.*
 
 An action is a string that is a valid Python identifier. A superaction is an action that is a prefix of another action. For example, `create` is a superaction of `create_asset`.
+
+> **Warning:** Like tags, action matching is based on simple string prefix. `read` will match `reading` and `read_all`.
 
 Resource auth tag string looks like a comma-separated of colon-separarted pairs of tags and actions: `tag_one:read, tag_two:write` or multiple actions:  `tag_one:{read, write}`(tags with associated actions).
 
