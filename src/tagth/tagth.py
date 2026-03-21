@@ -130,6 +130,9 @@ def allowed(principal: str, resource: str, action: str) -> bool:
     if FULL_ACCESS_ACTION in actions:
         return True
 
+    if action == FULL_ACCESS_ACTION:
+        return False
+
     for allowed_action in actions:
         if action.startswith(allowed_action):
             return True
