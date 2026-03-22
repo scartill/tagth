@@ -1,3 +1,9 @@
+# 1.2.4
+
+## Routine Updates
+
+- Publish a new patch version.
+
 # 1.2.3
 
 ## Security
