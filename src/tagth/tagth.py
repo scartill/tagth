@@ -125,6 +125,9 @@ def allowed(principal: str, resource: str, action: str) -> bool:
     Returns:
         bool: True if the action is allowed, False otherwise.
     """
+    if not isinstance(action, str):
+        raise TagthValidationError(f'Bad action {action}')
+
     actions = _resolve(principal, resource)
 
     if FULL_ACCESS_ACTION in actions:

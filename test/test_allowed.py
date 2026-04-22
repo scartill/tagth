@@ -193,3 +193,7 @@ def test_special_format_any_and_all():
     assert allowed(p_root, r, 'all')
     assert allowed(p_void, r, 'all')
     assert allowed(p_user, r, 'all')
+
+def test_allowed_invalid_action_type():
+    with pytest.raises(TagthValidationError, match="Bad action 123"):
+        allowed("user", "user:read", 123)
