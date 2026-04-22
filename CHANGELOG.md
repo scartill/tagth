@@ -1,3 +1,9 @@
+# 1.2.5
+
+## Security
+
+- Security enhancement: Add type validation for 'action' in 'allowed()'.
+
 # 1.2.4
 
 ## Routine Updates
