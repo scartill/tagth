@@ -126,7 +126,7 @@ def allowed(principal: str, resource: str, action: str) -> bool:
         bool: True if the action is allowed, False otherwise.
     """
     if not isinstance(action, str):
-        raise TagthValidationError(f'Bad action {action}')
+        raise TagthValidationError('Bad action: expected a string')
 
     actions = _resolve(principal, resource)
 
