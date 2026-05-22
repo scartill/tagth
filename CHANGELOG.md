@@ -1,3 +1,14 @@
+# 1.2.6
+
+## Security
+
+- Fix information exposure in validation errors by using static, generic error messages.
+
+## Tooling
+
+- Introduce `ruff` for linting and formatting.
+- Remove outdated `.flake8` configuration.
+
 # 1.2.5
 
 ## Security
