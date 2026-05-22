@@ -1,5 +1,3 @@
-import re
-
 import pytest
 
 from tagth.tagth import TagthValidationError, _normalize_resource
@@ -28,12 +26,10 @@ def test_empty_resource():
 
 
 def test_invalid_type_resource():
-    with pytest.raises(TagthValidationError, match='Bad resource 1'):
+    with pytest.raises(TagthValidationError, match='Bad resource: expected a string'):
         _normalize_resource(1)
 
-    with pytest.raises(
-        TagthValidationError, match=re.escape('Bad resource [\'content:read\']')
-    ):
+    with pytest.raises(TagthValidationError, match='Bad resource: expected a string'):
         _normalize_resource(['content:read'])
 
 

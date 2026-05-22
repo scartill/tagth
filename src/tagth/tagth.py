@@ -33,7 +33,7 @@ class TagthValidationError(TagthException):
 
 def _normalize_principal(principal: str) -> list[str]:
     if not isinstance(principal, str):
-        raise TagthValidationError(f'Bad principal {principal}')
+        raise TagthValidationError('Bad principal: expected a string')
 
     separator = Literal(TAG_LIST_DELIMETER)
     principal_tag = (Word(identchars, identbodychars))('principal_tag')
@@ -46,14 +46,14 @@ def _normalize_principal(principal: str) -> list[str]:
         result = parser.parseString(principal)
         return result.asList()
     except ParseException as e:
-        raise TagthValidationError(f"Invalid principal: {principal}") from e
+        raise TagthValidationError('Invalid principal format') from e
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     if not resource:
         return []
     if not isinstance(resource, str):
-        raise TagthValidationError(f'Bad resource {resource}')
+        raise TagthValidationError('Bad resource: expected a string')
 
     separator = Literal(TAG_LIST_DELIMETER)
     resource_tag = (Word(identchars, identbodychars))('resource_tag')
@@ -80,7 +80,7 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         result = parser.parseString(resource)
         return result.asList()
     except ParseException as e:
-        raise TagthValidationError(f"Invalid resource: {resource}") from e
+        raise TagthValidationError('Invalid resource format') from e
 
 
 def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:

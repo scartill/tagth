@@ -26,3 +26,6 @@ dev = [
     "ruff>=0.15.14",
     "twine>=6.1.0",
 ]
+
+[tool.ruff]
+line-length = 160
