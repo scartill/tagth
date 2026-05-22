@@ -12,3 +12,7 @@
 **Vulnerability:** A user granted an action tag that is a prefix of a special internal action like `all` (e.g., `a` or `al`) is erroneously granted full system access because the authorization library evaluates `action.startswith(allowed_action)`.
 **Learning:** When using prefix-based string matching for authorization tags or actions, special values that represent full access (e.g., `all`, `*`) must be explicitly excluded from being matched as a suffix to a user's tag.
 **Prevention:** Always check for an exact match against special reserved actions before falling back to prefix matching for regular actions.
+## 2025-02-18 - [Information Exposure in Error Messages]
+**Vulnerability:** Found that the `TagthValidationError` exceptions were leaking raw user input for invalid principals, resources, and actions by injecting the untrusted string into the exception message.
+**Learning:** Returning unsanitized user input in error messages is dangerous, as it can be leveraged in reflected attacks or to infer backend states if errors are surfaced to the user.
+**Prevention:** Always use static, generic strings for validation errors. Rely on application logs for detailed debugging info instead of the exception message.
