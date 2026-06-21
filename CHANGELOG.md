@@ -1,3 +1,9 @@
+# 1.2.7
+
+## Security
+
+- Fix exception chaining information leak in validation errors.
+
 # 1.2.6
 
 ## Security
