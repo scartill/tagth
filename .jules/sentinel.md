@@ -17,7 +17,7 @@
 **Learning:** Returning unsanitized user input in error messages is dangerous, as it can be leveraged in reflected attacks or to infer backend states if errors are surfaced to the user.
 **Prevention:** Always use static, generic strings for validation errors. Rely on application logs for detailed debugging info instead of the exception message.
 
-## 2024-05-18 - Exception Context Leakage in PyParsing Error Handling
-**Vulnerability:** Exception chaining (`from e`) when catching PyParsing's `ParseException` caused `TagthValidationError` to expose internal parser state and raw user input snippets via stack traces.
-**Learning:** Python 3's automatic exception chaining via `from e` (or implicit chaining) inadvertently exposes internal implementation details (like the underlying parser used) and can log sensitive strings if the input causing the parse error contained secrets.
+## 2024-05-18 - [Exception Context Leakage in pyparsing Error Handling]
+**Vulnerability:** Exception chaining (`from e`) when catching pyparsing's `ParseException` caused `TagthValidationError` to expose internal parser state and raw user input snippets via stack traces.
+**Learning:** Python 3 exception chaining (explicit via `raise ... from e`, or implicit when raising inside an `except` block without `from None`) can expose internal implementation details and may log sensitive input snippets if present.
 **Prevention:** Always use `raise CustomException("Generic message") from None` when wrapping internal library exceptions to ensure secure, generic error boundaries.
