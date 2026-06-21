@@ -45,8 +45,8 @@ def _normalize_principal(principal: str) -> list[str]:
     try:
         result = parser.parseString(principal)
         return result.asList()
-    except ParseException as e:
-        raise TagthValidationError('Invalid principal format') from e
+    except ParseException:
+        raise TagthValidationError('Invalid principal format') from None
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
@@ -79,8 +79,8 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     try:
         result = parser.parseString(resource)
         return result.asList()
-    except ParseException as e:
-        raise TagthValidationError('Invalid resource format') from e
+    except ParseException:
+        raise TagthValidationError('Invalid resource format') from None
 
 
 def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:
