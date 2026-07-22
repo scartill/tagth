@@ -34,6 +34,8 @@ class TagthValidationError(TagthException):
 def _normalize_principal(principal: str) -> list[str]:
     if not isinstance(principal, str):
         raise TagthValidationError('Bad principal: expected a string')
+    if len(principal) > 2048:
+        raise TagthValidationError('Bad principal: input too long')
 
     separator = Literal(TAG_LIST_DELIMETER)
     principal_tag = (Word(identchars, identbodychars))('principal_tag')
@@ -54,6 +56,8 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         return []
     if not isinstance(resource, str):
         raise TagthValidationError('Bad resource: expected a string')
+    if len(resource) > 2048:
+        raise TagthValidationError('Bad resource: input too long')
 
     separator = Literal(TAG_LIST_DELIMETER)
     resource_tag = (Word(identchars, identbodychars))('resource_tag')
@@ -127,6 +131,8 @@ def allowed(principal: str, resource: str, action: str) -> bool:
     """
     if not isinstance(action, str):
         raise TagthValidationError('Bad action: expected a string')
+    if len(action) > 256:
+        raise TagthValidationError('Bad action: input too long')
 
     actions = _resolve(principal, resource)
 
