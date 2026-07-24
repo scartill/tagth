@@ -52,10 +52,10 @@ def _normalize_principal(principal: str) -> list[str]:
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
-    if not resource:
-        return []
     if not isinstance(resource, str):
         raise TagthValidationError('Bad resource: expected a string')
+    if resource == VOID_RESOURCE:
+        return []
     if len(resource) > 2048:
         raise TagthValidationError('Bad resource: input too long')
 
