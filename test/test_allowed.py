@@ -211,3 +211,11 @@ def test_input_length_limits():
     long_action = "a" * 257
     with pytest.raises(TagthValidationError, match="Bad action: input too long"):
         allowed("user", "user:read", long_action)
+
+    # Boundary cases: exactly at the limit should not raise
+    assert allowed("a" * 2048, "", "read") is False
+
+    resource_at_limit = ("a" * 2046) + ":r"  # 2048 chars total
+    assert allowed("root", resource_at_limit, "read") is True
+
+    assert allowed("user", "user:read", "a" * 256) is False
