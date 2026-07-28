@@ -21,3 +21,8 @@
 **Vulnerability:** Exception chaining (`from e`) when catching pyparsing's `ParseException` caused `TagthValidationError` to expose internal parser state and raw user input snippets via stack traces.
 **Learning:** Python 3 exception chaining (explicit via `raise ... from e`, or implicit when raising inside an `except` block without `from None`) can expose internal implementation details and may log sensitive input snippets if present.
 **Prevention:** Always use `raise CustomException("Generic message") from None` when wrapping internal library exceptions to ensure secure, generic error boundaries.
+
+## 2025-02-18 - [DoS via Parser CPU Exhaustion]
+**Vulnerability:** The library's `pyparsing` implementation is susceptible to Denial of Service (DoS) attacks via CPU exhaustion when processing extremely long strings (e.g., a 200KB principal string takes >40s to parse).
+**Learning:** Libraries using complex parsing mechanisms (like regex or pyparsing) must enforce strict bounds on input length to prevent algorithmic complexity attacks or resource exhaustion.
+**Prevention:** Always enforce reasonable maximum length limits on user-controlled inputs before passing them to parsing engines.

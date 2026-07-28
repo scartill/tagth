@@ -197,3 +197,25 @@ def test_special_format_any_and_all():
 def test_allowed_invalid_action_type():
     with pytest.raises(TagthValidationError, match="Bad action: expected a string"):
         allowed("user", "user:read", 123)
+
+
+def test_input_length_limits():
+    long_principal = "a" * 2049
+    with pytest.raises(TagthValidationError, match="Bad principal: input too long"):
+        allowed(long_principal, "user:read", "read")
+
+    long_resource = "user:read," * 250 + "user:read"  # > 2048 chars
+    with pytest.raises(TagthValidationError, match="Bad resource: input too long"):
+        allowed("user", long_resource, "read")
+
+    long_action = "a" * 257
+    with pytest.raises(TagthValidationError, match="Bad action: input too long"):
+        allowed("user", "user:read", long_action)
+
+    # Boundary cases: exactly at the limit should not raise
+    assert allowed("a" * 2048, "", "read") is False
+
+    resource_at_limit = ("a" * 2046) + ":r"  # 2048 chars total
+    assert allowed("root", resource_at_limit, "read") is True
+
+    assert allowed("user", "user:read", "a" * 256) is False
