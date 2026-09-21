@@ -26,3 +26,8 @@
 **Vulnerability:** The library's `pyparsing` implementation is susceptible to Denial of Service (DoS) attacks via CPU exhaustion when processing extremely long strings (e.g., a 200KB principal string takes >40s to parse).
 **Learning:** Libraries using complex parsing mechanisms (like regex or pyparsing) must enforce strict bounds on input length to prevent algorithmic complexity attacks or resource exhaustion.
 **Prevention:** Always enforce reasonable maximum length limits on user-controlled inputs before passing them to parsing engines.
+
+## 2024-09-21 - [Bypassing Empty Checks Using Whitespace]
+**Vulnerability:** Empty string checks in `_normalize_resource` (and missing check in `_normalize_principal`) failed to use `.strip()`. This allowed whitespace-only strings ("   ") to bypass the empty check and be parsed, eventually resolving to privileged internal tags (like `@empty`).
+**Learning:** In parsing logic, simple `== ""` checks are not sufficient when using PyParsing rules that can match empty tokens (`Empty()`). Input must be `.strip()`ped before checking for empty values to ensure that strings that are functionally empty (only whitespaces) are handled correctly and securely.
+**Prevention:** Always use `.strip()` on string inputs before evaluating them against empty or void constants in normalization and parsing logic.

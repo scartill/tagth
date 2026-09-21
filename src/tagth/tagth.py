@@ -34,6 +34,8 @@ class TagthValidationError(TagthException):
 def _normalize_principal(principal: str) -> list[str]:
     if not isinstance(principal, str):
         raise TagthValidationError('Bad principal: expected a string')
+    if principal.strip() == VOID_RESOURCE:
+        return [VOID_PRINCIPAL]
     if len(principal) > 2048:
         raise TagthValidationError('Bad principal: input too long')
 
@@ -54,7 +56,7 @@ def _normalize_principal(principal: str) -> list[str]:
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
     if not isinstance(resource, str):
         raise TagthValidationError('Bad resource: expected a string')
-    if resource == VOID_RESOURCE:
+    if resource.strip() == VOID_RESOURCE:
         return []
     if len(resource) > 2048:
         raise TagthValidationError('Bad resource: input too long')

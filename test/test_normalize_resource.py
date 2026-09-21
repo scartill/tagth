@@ -15,14 +15,14 @@ def test_valid_resource():
 
 
 def test_empty_resource():
-    r = _normalize_resource(None)
-    assert r == []
+    with pytest.raises(TagthValidationError, match='Bad resource: expected a string'):
+        _normalize_resource(None)
 
     r = _normalize_resource('')
     assert r == []
 
     r = _normalize_resource(' ')
-    assert r == [('@empty', 'all')]
+    assert r == []
 
 
 def test_invalid_type_resource():
