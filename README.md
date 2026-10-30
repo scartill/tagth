@@ -38,6 +38,29 @@ Special values:
 * `void` (can only access resources with `anyone` access, see below),
 * `root` (unlimited access).
 
+### Global Actions Section
+
+A principal string may carry an optional global-actions section, introduced by a single `#`:
+
+```
+<tag-list> [ '#' <global-action-list> ]
+```
+
+The actions listed after `#` are granted on every resource, regardless of resource tags, mirroring the way `root` injects `all`. The existing action prefix-matching still applies, so a global action permits only attempted actions that start with it.
+
+* `# read` — full read-only access (`read*` on every resource, including an empty resource).
+* `campaign_42 # read` — the normal `campaign_42` grants, plus a global `read`.
+* `# read, export` — full breadth for `read*` and `export*`.
+* `# all` — equivalent to `root`.
+
+Rules:
+* At most one `#` is permitted; a second `#` is a validation error.
+* The tag-list before `#` may be empty (`# read`), but the action-list after `#` must not be (`campaign_42 #` and a bare `#` are validation errors).
+* Whitespace around `#` and within the list is insignificant (`a#read` is equivalent to `a # read`).
+* An explicit `void` principal combined with a non-empty `#` section is a validation error.
+
+The feature is additive and backward-compatible: `#` is not a valid identifier character, so no existing principal can contain one. The characters `:` and `@` are reserved on the principal side for future extensions.
+
 ### Resource and Resource Tags
 
 A Resource is an object that can be accessed by a Principal. A Resource can be a user, a channel, a source asset, an extension, a tenant, a campaign, etc.
@@ -139,4 +162,20 @@ principal_tags = 'content'
 resource_tags = 'content:all'
 allowed(principal_tags, resource_tags, 'read')  # Returns True
 allowed(principal_tags, resource_tags, 'write')  # Returns True
+```
+
+### Global Actions
+
+```python
+# A '#' section grants a capped action set on every resource
+allowed('# read', 'content:read, meta:write', 'read')   # Returns True
+allowed('# read', 'content:read, meta:write', 'write')  # Returns False
+allowed('# read', '', 'read')                           # Returns True (even empty resource)
+
+# Combine ordinary tags with a global cap
+allowed('campaign_42 # read', 'campaign_42:write', 'write')  # Returns True (tag grant)
+allowed('campaign_42 # read', 'other:write', 'read')         # Returns True (global cap)
+
+# '# all' is equivalent to 'root'
+allowed('# all', 'content:read', 'anything')  # Returns True
 ```
