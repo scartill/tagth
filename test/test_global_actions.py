@@ -1,6 +1,6 @@
 import pytest
 
-from tagth.tagth import allowed, TagthValidationError
+from tagth.tagth import allowed, validate_principal, TagthValidationError
 
 
 @pytest.mark.parametrize(
@@ -37,3 +37,31 @@ def test_conformance_vectors(principal, resource, action, expected):
 def test_conformance_validation_errors(principal):
     with pytest.raises(TagthValidationError):
         allowed(principal, 'content:read', 'read')
+
+
+@pytest.mark.parametrize(
+    'principal',
+    [
+        '# read',
+        '# read, export',
+        '# all',
+        'campaign_42 # read',
+        'campaign_42#read',
+        'tag_1, tag_2 # read, write',
+    ],
+)
+def test_validate_principal_accepts_valid_global_actions(principal):
+    assert validate_principal(principal) is True
+
+
+@pytest.mark.parametrize(
+    'principal',
+    [
+        '# read # write',
+        'campaign_42 #',
+        '#',
+        'void # read',
+    ],
+)
+def test_validate_principal_rejects_invalid_global_actions(principal):
+    assert validate_principal(principal) is False
