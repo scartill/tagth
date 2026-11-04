@@ -13,6 +13,7 @@ from pyparsing import (
 
 TAG_LIST_DELIMETER = ','
 ACTION_DELIMETER = ':'
+GLOBAL_ACTIONS_DELIMITER = '#'
 ANYONE_PRINCIPAL = 'anyone'
 FULL_ACCESS_ACTION = 'all'
 ROOT_PRINCIPAL = 'root'
@@ -31,12 +32,7 @@ class TagthValidationError(TagthException):
     pass
 
 
-def _normalize_principal(principal: str) -> list[str]:
-    if not isinstance(principal, str):
-        raise TagthValidationError('Bad principal: expected a string')
-    if len(principal) > 2048:
-        raise TagthValidationError('Bad principal: input too long')
-
+def _parse_tag_list(tag_string: str) -> list[str]:
     separator = Literal(TAG_LIST_DELIMETER)
     principal_tag = (Word(identchars, identbodychars))('principal_tag')
     empty_principal = (Empty()).setParseAction(lambda _: [VOID_PRINCIPAL])
@@ -45,10 +41,53 @@ def _normalize_principal(principal: str) -> list[str]:
     parser = ZeroOrMore(principal_module + Suppress(separator)) + principal_module + StringEnd()
 
     try:
-        result = parser.parseString(principal)
+        result = parser.parseString(tag_string)
         return result.asList()
     except ParseException:
         raise TagthValidationError('Invalid principal format') from None
+
+
+def _parse_global_actions(action_string: str) -> list[str]:
+    separator = Literal(TAG_LIST_DELIMETER)
+    action = (Word(identchars, identbodychars))('action')
+
+    parser = ZeroOrMore(action + Suppress(separator)) + action + StringEnd()
+
+    try:
+        result = parser.parseString(action_string)
+        return result.asList()
+    except ParseException:
+        raise TagthValidationError('Invalid principal format') from None
+
+
+def _normalize_principal(principal: str) -> tuple[list[str], list[str]]:
+    if not isinstance(principal, str):
+        raise TagthValidationError('Bad principal: expected a string')
+    if len(principal) > 2048:
+        raise TagthValidationError('Bad principal: input too long')
+
+    if GLOBAL_ACTIONS_DELIMITER not in principal:
+        return _parse_tag_list(principal), []
+
+    parts = principal.split(GLOBAL_ACTIONS_DELIMITER)
+    if len(parts) != 2:
+        raise TagthValidationError('Invalid principal format')
+
+    left, right = parts
+
+    if right.strip() == '':
+        raise TagthValidationError('Invalid principal format')
+
+    global_actions = _parse_global_actions(right)
+
+    if left.strip() == '':
+        tags: list[str] = []
+    else:
+        tags = _parse_tag_list(left)
+        if VOID_PRINCIPAL in tags:
+            raise TagthValidationError('Invalid principal format')
+
+    return tags, global_actions
 
 
 def _normalize_resource(resource: str) -> list[tuple[str, str]]:
@@ -87,12 +126,19 @@ def _normalize_resource(resource: str) -> list[tuple[str, str]]:
         raise TagthValidationError('Invalid resource format') from None
 
 
-def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> set[str]:
+def _resolve_internal(
+    principal: list[str],
+    global_actions: list[str],
+    resource: list[tuple[str, str]],
+) -> set[str]:
     actions = set()
 
     for pr_tag in principal:
         if pr_tag == ROOT_PRINCIPAL:
             actions.add(FULL_ACCESS_ACTION)
+
+    for global_action in global_actions:
+        actions.add(global_action)
 
     if not resource:
         return actions
@@ -113,9 +159,9 @@ def _resolve_internal(principal: list[str], resource: list[tuple[str, str]]) -> 
 
 
 def _resolve(principal: str, resource: str) -> set[str]:
-    principal_list = _normalize_principal(principal)
+    principal_list, global_actions = _normalize_principal(principal)
     resource_list = _normalize_resource(resource)
-    return _resolve_internal(principal_list, resource_list)
+    return _resolve_internal(principal_list, global_actions, resource_list)
 
 
 def allowed(principal: str, resource: str, action: str) -> bool:

@@ -3,10 +3,10 @@ from tagth.tagth import _normalize_principal, _normalize_resource, _resolve, all
 
 def test_normalize_principal():
     p = _normalize_principal('me')
-    assert list(p) == ['me']
+    assert p == (['me'], [])
 
     p = _normalize_principal('this,that, those')
-    assert list(p) == ['this', 'that', 'those']
+    assert p == (['this', 'that', 'those'], [])
 
 
 def test_normalize_resource():

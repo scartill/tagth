@@ -1,3 +1,9 @@
+# 1.3.0
+
+## Features
+
+- Added support for a `#` global-actions section in the principal string, granting a capped action set (e.g. `read*`) across every resource. `# all` is equivalent to `root`.
+
 # 1.2.7
 
 ## Security
